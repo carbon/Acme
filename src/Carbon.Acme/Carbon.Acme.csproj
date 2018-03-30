@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Carbon.Acme</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.9.2</Version>
+    <LangVersion>7.2</LangVersion>
+
+    <!-- Package Details -->
+    <Authors>iamcarbon</Authors>
+    <Copyright>© Jason Nelson</Copyright>
+    <Description>Acme V2 client</Description>
+    <PackageTags>acme;acmev2;carbon;netstandard</PackageTags>
+    <PackageProjectUrl>https://github.com/carbon/Acme</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Carbon.Jose" Version="0.8.0" />
+  </ItemGroup>
+
+</Project>
