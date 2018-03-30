@@ -9,9 +9,10 @@
     <!-- Package Details -->
     <Authors>iamcarbon</Authors>
     <Copyright>© Jason Nelson</Copyright>
-    <Description>Acme V2 client</Description>
+    <Description>An ACME V2 client for requesting certificates through Let's Encrypt and other ACME providers.</Description>
     <PackageTags>acme;acmev2;carbon;netstandard</PackageTags>
     <PackageProjectUrl>https://github.com/carbon/Acme</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/carbon/Acme/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
