@@ -16,7 +16,7 @@ namespace Carbon.Acme
 {
     public class AcmeClient
     {
-        public static readonly string Version = "acme-10";
+        public static readonly string Version = "acme-11";
 
         private readonly HttpClient httpClient = new HttpClient {
             DefaultRequestHeaders = {
@@ -392,7 +392,7 @@ namespace Carbon.Acme
         {
             if (_thumbprint == null)
             {
-                var key = Jwk.FromPublicKey(_privateKey.ExportParameters(false));
+                var key = Jwk.FromRSAParameters(_privateKey.ExportParameters(false));
 
                 string json = "{\"e\":\"" + key.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + key.Modulus + "\"}";
 
@@ -549,7 +549,7 @@ namespace Carbon.Acme
         private JsonObject GetMessageHeader(string url, Nonce nonce)
         {
             var header = new JsonObject {
-                { "alg",   JwtAlgorithms.RS256 },
+                { "alg",   AlgorithmNames.RS256 },
                 { "nonce", nonce.Value },
                 { "url",   url }
             };
@@ -560,7 +560,7 @@ namespace Carbon.Acme
             }
             else
             {
-                var jwk = Jwk.FromPublicKey(_privateKey.ExportParameters(includePrivateParameters: false));
+                var jwk = Jwk.FromRSAParameters(_privateKey.ExportParameters(includePrivateParameters: false));
 
                 header.Add("jwk", JsonObject.FromObject(jwk));
             }
@@ -570,5 +570,5 @@ namespace Carbon.Acme
     }
 }
 
-// LATEST : https://tools.ietf.org/html/draft-ietf-acme-acme-10
+// LATEST : https://tools.ietf.org/html/draft-ietf-acme-acme-12
 // LIVING : https://github.com/ietf-wg-acme/acme/blob/master/draft-ietf-acme-acme.md
