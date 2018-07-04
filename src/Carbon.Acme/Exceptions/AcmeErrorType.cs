@@ -3,6 +3,11 @@
     public enum AcmeErrorType
     {
         /// <summary>
+        /// The request specified an account that does not exist
+        /// </summary>
+        AccountDoesNotExist,
+
+        /// <summary>
         /// The CSR is unacceptable(e.g., due to a short key)
         /// </summary>
         BadCSR,
@@ -13,9 +18,19 @@
         BadNonce,
 
         /// <summary>
+        /// The revocation reason provided is not allowed by the server
+        /// </summary>
+        BadRevocationReason,
+
+        /// <summary>
         /// The JWS was signed with an algorithm the server does not support
         /// </summary>
         BadSignatureAlgorithm,
+
+        /// <summary>
+        /// Certification Authority Authorization(CAA) records forbid the CA from issuing
+        /// </summary>
+        Caa,
 
         /// <summary>
         /// A contact URL for an account was invalid
@@ -31,11 +46,6 @@
         /// The request must include a value for the "externalAccountBinding" field
         /// </summary>
         ExternalAccountRequired,
-
-        /// <summary>
-        /// The request specified an account that does not exist
-        /// </summary>
-        AccountDoesNotExist,
 
         /// <summary>
         /// The request message was malformed
@@ -71,16 +81,6 @@
         /// Visit the "instance" URL and take actions specified there
         /// </summary>
         UserActionRequired,
-
-        /// <summary>
-        /// The revocation reason provided is not allowed by the server
-        /// </summary>
-        BadRevocationReason,
-
-        /// <summary>
-        /// Certification Authority Authorization(CAA) records forbid the CA from issuing
-        /// </summary>
-        Caa,
 
         /// <summary>
         /// There was a problem with a DNS query
