@@ -15,17 +15,8 @@ namespace Carbon.Acme
 
         [DataMember(Name = "orders", IsRequired = true)]
         public string OrdersUrl { get; set; }
-        
+
         [IgnoreDataMember]
         public string Url { get; set; }
     }
-
-    public enum AccountStatus : byte
-    {
-        Unknown     = 0,
-        Valid       = 1,
-        Deactivated = 2,
-        Revoked     = 3
-    }
-    // Status: valid | deactivated | revoked
 }
