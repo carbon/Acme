@@ -62,7 +62,7 @@ namespace Carbon.Acme
         // 7.3. Account Creation | https://tools.ietf.org/html/draft-ietf-acme-acme-10#section-7.3
         public async Task<string> CreateAccountAsync(CreateAccountRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request is null) throw new ArgumentNullException(nameof(request));
 
             await InitializeDirectoryAsync();
 
@@ -135,7 +135,7 @@ namespace Carbon.Acme
 
         public async Task<Authorization> GetAuthorizationAsync(string url)
         {
-            if (url == null) throw new ArgumentNullException(nameof(url));
+            if (url is null) throw new ArgumentNullException(nameof(url));
 
             return (await _GetAuthorizationAsync(url)).authorization;
         }
@@ -168,7 +168,7 @@ namespace Carbon.Acme
 
         public async Task<Authorization> WaitForAuthorizationAsync(string url, TimeSpan timeout)
         {
-            if (url == null)
+            if (url is null)
             {
                 throw new ArgumentNullException(nameof(url));
             }
@@ -248,7 +248,7 @@ namespace Carbon.Acme
 
         public async Task<Order> GetOrderAsync(string url)
         {
-            if (url == null) throw new ArgumentNullException(nameof(url));
+            if (url is null) throw new ArgumentNullException(nameof(url));
 
             var responseText = await httpClient.GetStringAsync(url);
 
@@ -257,7 +257,7 @@ namespace Carbon.Acme
 
         public async Task<OrderList> ListOrdersAsync(string url)
         {
-            if (url == null) throw new ArgumentNullException(nameof(url));
+            if (url is null) throw new ArgumentNullException(nameof(url));
 
             // Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
 
@@ -267,7 +267,7 @@ namespace Carbon.Acme
         // POST /acme/new-order
         public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request is null) throw new ArgumentNullException(nameof(request));
 
             if (!IsInitialized) await InitializeAsync();
 
@@ -290,7 +290,7 @@ namespace Carbon.Acme
         //  POST /acme/order/{id}/finalize
         public async Task<Order> FinalizeOrderAsync(FinalizeOrderRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request is null) throw new ArgumentNullException(nameof(request));
 
             if (!IsInitialized) await InitializeAsync();
 
@@ -308,7 +308,7 @@ namespace Carbon.Acme
         
         public async Task<Order> WaitForCertificateAsync(string orderUrl, TimeSpan timeout)
         {
-            if (orderUrl == null)
+            if (orderUrl is null)
             {
                 throw new ArgumentNullException(nameof(orderUrl));
             }
@@ -325,10 +325,10 @@ namespace Carbon.Acme
             var retryAfter = TimeSpan.FromSeconds(1);
             
             int retryCount = 0;
-            
-            while ((result.Status == OrderStatus.Pending || 
-                    result.Status == OrderStatus.Processing ||
-                    result.Status == OrderStatus.Ready) && retryCount < 5)
+
+            // Once the certificate is issued, the order enters the "valid" state.
+
+            while (result.Status != OrderStatus.Valid && retryCount < 5)
             {
                 await Task.Delay(retryAfter);
 
@@ -348,7 +348,7 @@ namespace Carbon.Acme
 
         public async Task<string> DownloadCertificateChainAsync(string url)
         {
-            if (url == null) throw new ArgumentNullException(nameof(url));
+            if (url is null) throw new ArgumentNullException(nameof(url));
 
             if (!IsInitialized) await InitializeAsync();
 
@@ -370,7 +370,7 @@ namespace Carbon.Acme
         // 7.6 https://tools.ietf.org/html/draft-ietf-acme-acme-09#section-7.6
         public async Task RevokeCertificateAsync(RevokeCertificateRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request is null) throw new ArgumentNullException(nameof(request));
 
             if (!IsInitialized) await InitializeAsync();
 
@@ -390,7 +390,7 @@ namespace Carbon.Acme
 
         private string GetSha256Thumbprint()
         {
-            if (_thumbprint == null)
+            if (_thumbprint is null)
             {
                 var key = Jwk.FromRSAParameters(_privateKey.ExportParameters(false));
 
@@ -409,7 +409,7 @@ namespace Carbon.Acme
 
         public string GetKeyAuthorization(string token)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
+            if (token is null) throw new ArgumentNullException(nameof(token));
 
             return token + "." + GetSha256Thumbprint();
         }
@@ -420,11 +420,18 @@ namespace Carbon.Acme
 
         // A nonce is included with every request to prevent replay.
 
-        private async Task<Nonce> GetNonceAsync()
+        public async Task<Nonce> GetNonceAsync()
         {
-            if (nonces.TryDequeue(out Nonce nonce))
+            while (nonces.TryDequeue(out Nonce nonce))
             {
+                // Ingore nonces older than 5 minutes
+                if (nonce.Age > TimeSpan.FromMinutes(5))
+                {
+                    continue;
+                }
+                
                 return nonce;
+                
             }
 
             // HEAD /acme/new-nonce HTTP/1.1 ->
@@ -434,7 +441,7 @@ namespace Carbon.Acme
             {
                 string replayNonce = response.Headers.GetValues("Replay-Nonce").First();
 
-                return new Nonce(replayNonce);
+                return new Nonce(replayNonce, DateTime.UtcNow);
             }
         }
 
@@ -446,7 +453,7 @@ namespace Carbon.Acme
         {
              await InitializeDirectoryAsync();
             
-            if (_accountUrl == null)
+            if (_accountUrl is null)
             {
                 this._accountUrl = await GetAccountUrlAsync();
             }
@@ -454,7 +461,7 @@ namespace Carbon.Acme
 
         private async Task InitializeDirectoryAsync()
         {
-            if (_directory == null)
+            if (_directory is null)
             {
                 var responseText = await httpClient.GetStringAsync(_directoryUrl);
 
@@ -501,10 +508,10 @@ namespace Carbon.Acme
                     // ensure the queue does not exceed 3 entries
                     if (nonces.Count > 3)
                     {
-                        nonces.TryDequeue(out _);
+                        nonces.TryDequeue(out _); // remove the oldest nonce when the queue exceeds three entries
                     }
 
-                    nonces.Enqueue(new Nonce(string.Join(",", replayNonce)));
+                    nonces.Enqueue(new Nonce(string.Join(",", replayNonce), DateTime.UtcNow));
                 }
                 
                 // Content-Type is null when only a Location is returned
