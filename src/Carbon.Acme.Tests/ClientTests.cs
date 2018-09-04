@@ -52,5 +52,23 @@ namespace Carbon.Acme.Tests
 
             throw new Exception(JsonObject.FromObject(new { order, order.Url }).ToString());
         }
+
+
+        [Fact]
+        public async Task GetNonce()
+        {
+            var privateKey = RSA.Create(RSAPrivateKey.Decode(TestData.PrivateRSA256KeyText));
+
+            var client = new AcmeClient(privateKey, directoryUrl: "https://acme-staging-v02.api.letsencrypt.org/directory");
+
+            await client.InitializeAsync();
+
+            var nonce = await client.GetNonceAsync();
+
+            await Task.Delay(1100);
+
+            Assert.True(nonce.Age.TotalSeconds > 1);
+            Assert.NotNull(nonce.Value);
+        }
     }
 }
