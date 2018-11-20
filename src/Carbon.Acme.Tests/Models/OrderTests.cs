@@ -6,7 +6,7 @@ namespace Carbon.Acme.Tests
 {
     public class OrderTests
     {
-        [Fact] // ensure these do not changed (depended on by Borg)
+        [Fact] // ensure these do not changed
         public void StatusCodes()
         {
             Assert.Equal(1, (int)OrderStatus.Pending);
@@ -48,7 +48,19 @@ namespace Carbon.Acme.Tests
 
             Assert.Equal("https://example.com/acme/authz/1234", model.AuthorizationUrls[0]);
             Assert.Equal("https://example.com/acme/authz/2345", model.AuthorizationUrls[1]);
+        }
 
+        [Fact]
+        public void ParseReady()
+        {
+            var text = @"{
+  ""status"": ""ready"",
+  ""finalize"": ""https://example.com/acme/acct/1/order/1/finalize""
+}";
+
+            var model = JsonObject.Parse(text).As<Order>();
+
+            Assert.Equal(OrderStatus.Ready, model.Status);
         }
     }
 }
