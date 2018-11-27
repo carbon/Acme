@@ -3,7 +3,7 @@
     public enum OrderStatus
     {
         Pending    = 1,
-        Ready      = 2,
+        Ready      = 2, // when all of the order’s authorizations have "status" equal to "valid" 
         Processing = 3,
         Valid      = 4,
         Invalid    = 5
