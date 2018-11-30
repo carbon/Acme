@@ -1,4 +1,4 @@
-# Acme
+# ACME
 
 
-An ACMEv2 (draft 16) library for .NETStandard2.0.
+An .NETSTANDARD ACMEv2 (draft 16) client.
