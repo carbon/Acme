@@ -1,7 +1,10 @@
-﻿using System.Runtime.Serialization;
+﻿#nullable disable
 
-namespace Carbon.Acme
+using System.Runtime.Serialization;
+
+namespace Carbon.Acme.Exceptions
 {
+    [DataContract]
     public class Problem
     {
         [DataMember(Name = "type")]

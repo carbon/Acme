@@ -3,9 +3,11 @@ using System.Runtime.Serialization;
 
 namespace Carbon.Acme
 {
-    public class Identifier : IEquatable<Identifier>
+    public sealed class Identifier : IEquatable<Identifier>
     {
+#nullable disable
         public Identifier() { }
+#nullable enable
 
         public Identifier(string type, string value)
         {

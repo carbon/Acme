@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿#nullable disable
+
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
@@ -6,6 +8,7 @@ using Carbon.Json;
 
 namespace Carbon.Acme
 {
+    [DataContract]
     public class Directory
     {
         [DataMember(Name = "newNonce")]
@@ -27,16 +30,15 @@ namespace Carbon.Acme
         public string KeyChangeUrl { get; set; }
 
         [DataMember(Name = "meta")]
-        public Meta Meta { get; set; }
+        public DirectoryMetadata Meta { get; set; }
         
         public static async Task<Directory> GetAsync(string url = "https://acme-v02.api.letsencrypt.org/directory")
         {
-            using (var http = new HttpClient())
-            {
-                var responseText = await http.GetStringAsync(url);
+            using HttpClient http = new HttpClient();
 
-                return JsonObject.Parse(responseText).As<Directory>();
-            }
+            string responseText = await http.GetStringAsync(url);
+
+            return JsonObject.Parse(responseText).As<Directory>();
         }
     }
 }

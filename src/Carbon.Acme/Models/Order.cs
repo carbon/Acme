@@ -1,8 +1,12 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Runtime.Serialization;
+using Carbon.Acme.Exceptions;
 
 namespace Carbon.Acme
 {
+    [DataContract]
     public class Order
     {
         [IgnoreDataMember]

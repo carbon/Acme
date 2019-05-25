@@ -1,5 +1,9 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Runtime.Serialization;
+
+using Carbon.Acme.Exceptions;
 
 namespace Carbon.Acme
 {
@@ -38,7 +42,6 @@ namespace Carbon.Acme
         [DataMember(Name = "error", EmitDefaultValue = false)]
         public Problem Error { get; set; }
     }
-
 }
 
 /*

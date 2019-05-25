@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Carbon.Acme
+namespace Carbon.Acme.Exceptions
 {
-    public class AcmeException : Exception
+    public sealed class AcmeException : Exception
     {
         public AcmeException(string message)
             : base(message) { }
@@ -13,6 +13,6 @@ namespace Carbon.Acme
             Problem = problem;
         }
 
-        public Problem Problem { get; }
+        public Problem? Problem { get; }
     }
 }

@@ -1,7 +1,10 @@
-﻿using System.Runtime.Serialization;
+﻿#nullable disable
+
+using System.Runtime.Serialization;
 
 namespace Carbon.Acme
 {
+    [DataContract]
     public class ValidationRecord
     {
         [DataMember(Name = "url")]

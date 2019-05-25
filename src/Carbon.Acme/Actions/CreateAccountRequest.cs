@@ -5,13 +5,13 @@ namespace Carbon.Acme
     public class CreateAccountRequest
     {
         public CreateAccountRequest(
-            bool termsOfServiceAgreed, 
-            string[] contact, 
+            bool termsOfServiceAgreed,
+            string[] contact,
             bool? onlyReturnExisting = null)
         {
             TermsOfServiceAgreed = termsOfServiceAgreed;
-            Contact              = contact;
-            OnlyReturnExisting   = onlyReturnExisting;
+            Contact = contact;
+            OnlyReturnExisting = onlyReturnExisting;
         }
 
         [DataMember(Name = "termsOfServiceAgreed")]
