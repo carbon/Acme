@@ -2,7 +2,7 @@
 
 namespace Carbon.Acme
 {
-    public class Nonce
+    public readonly struct Nonce
     {
         public Nonce(string value, DateTime created)
         {
