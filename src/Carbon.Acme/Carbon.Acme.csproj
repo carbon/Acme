@@ -15,6 +15,11 @@
     <PackageLicenseUrl>https://github.com/carbon/Acme/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\Code\GitHub\tracking-https\libs\carbon-acme-fork</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Carbon.Jose" Version="0.17.0" />
   </ItemGroup>

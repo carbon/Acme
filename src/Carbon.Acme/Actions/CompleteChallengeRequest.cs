@@ -8,13 +8,13 @@ namespace Carbon.Acme
         public CompleteChallengeRequest(string url, string keyAuthorization)
         {
             Url              = url              ?? throw new ArgumentNullException(nameof(url));
-            KeyAuthorization = keyAuthorization ?? throw new ArgumentNullException(nameof(keyAuthorization));
+            //KeyAuthorization = keyAuthorization ?? throw new ArgumentNullException(nameof(keyAuthorization));
         }
 
         [IgnoreDataMember]
         public string Url { get; }
         
-        [DataMember(Name = "keyAuthorization", IsRequired = true)]
-        public string KeyAuthorization { get; }
+        //[DataMember(Name = "keyAuthorization", IsRequired = true)]
+        //public string KeyAuthorization { get; }
     }
 }
