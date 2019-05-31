@@ -16,13 +16,13 @@ namespace Carbon.Acme
         }
 
         public CreateOrderRequest(
-            Identifier[] identifiers, 
-            DateTime? notBefore = null, 
+            Identifier[] identifiers,
+            DateTime? notBefore = null,
             DateTime? notAfter = null)
         {
             Identifiers = identifiers ?? throw new ArgumentNullException(nameof(identifiers));
-            NotBefore   = notBefore;
-            NotAfter    = notAfter;
+            NotBefore = notBefore;
+            NotAfter = notAfter;
         }
 
         [DataMember(Name = "identifiers", IsRequired = true)]
