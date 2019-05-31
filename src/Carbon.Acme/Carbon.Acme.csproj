@@ -12,6 +12,7 @@
     <Copyright>© Jason Nelson</Copyright>
     <Description>An ACME V2 client for requesting certificates through Let's Encrypt and other ACME providers.</Description>
 
+    <PackageId>Carbon.Acme</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>acme;acmev2;carbon;netstandard</PackageTags>
     <PackageProjectUrl>https://github.com/carbon/Acme</PackageProjectUrl>
