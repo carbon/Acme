@@ -15,11 +15,12 @@ using Carbon.Json;
 
 namespace Carbon.Acme
 {
+    // ---------------------------------------------------------------
+    // RFC 8555 | Automatic Certificate Management Environment (ACME)
+    // ---------------------------------------------------------------
+
     public class AcmeClient
     {
-        // Based ON RFC 8555 | 2019/05
-        // Automatic Certificate Management Environment (ACME)
-
         private readonly HttpClient httpClient = new HttpClient {
             DefaultRequestHeaders = {
                 {  "User-Agent", "Carbon.Acme/2" }
@@ -54,7 +55,7 @@ namespace Carbon.Acme
                 }
             );
 
-            var (_, location, _) = await PostAsync(_directory.NewAccountUrl, message);
+            (_, string location, _) = await PostAsync(_directory.NewAccountUrl, message);
 
             // -> 201 (OK) [Account]
 
@@ -73,7 +74,7 @@ namespace Carbon.Acme
                 payload : JsonObject.FromObject(request)
             );
 
-            var (_, location, _) = await PostAsync(_directory.NewAccountUrl, message);
+            (_, string location, _) = await PostAsync(_directory.NewAccountUrl, message);
 
             this._accountUrl = location;
 
@@ -92,7 +93,7 @@ namespace Carbon.Acme
                 payload : JsonObject.FromObject(request)
             );
 
-            var (_, _, responseText) = await PostAsync(_accountUrl!, message);
+            (_, _, string responseText) = await PostAsync(_accountUrl!, message);
 
             // -> 200 (OK) [Account]
 
@@ -144,13 +145,15 @@ namespace Carbon.Acme
 
             var retryAfter = TimeSpan.FromSeconds(2);
 
+            // Let's Encrypt does not support Retry-After
+
             /*
             if (response.Headers.TryGetValues("Retry-After", out var retryAfterHeader)
                 && int.TryParse(retryAfterHeader.First(), out int retryAfterSeconds))
             {
                 retryAfter = TimeSpan.FromSeconds(retryAfterSeconds);
 
-                // Cap @ 5 seconds
+                // cap @ 5 seconds
                 if (retryAfter > TimeSpan.FromSeconds(5))
                 {
                     retryAfter = TimeSpan.FromSeconds(5);
@@ -202,8 +205,8 @@ namespace Carbon.Acme
             if (!IsInitialized) await InitializeAsync();
 
             var message = await GetSignedMessageAsync(
-                url: request.Url,
-                payload: JsonObject.FromObject(request)
+                url     : request.Url,
+                payload : JsonObject.FromObject(request)
             );
 
             var (_, _, responseText) = await PostAsync(request.Url, message);
@@ -226,11 +229,9 @@ namespace Carbon.Acme
         {
             if (!IsInitialized) await InitializeAsync();
 
-            var message = await GetSignedMessageAsync(
-                url: request.Url
-            );
+            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url);
 
-            var (_, _, responseText) = await PostAsync(request.Url, message);
+            (_, _, string responseText) = await PostAsync(request.Url, message);
 
             // -> 200 (OK) [Challenge]
 
@@ -292,7 +293,7 @@ namespace Carbon.Acme
                 payload: JsonObject.FromObject(request)
             );
 
-            var (_, _, responseText) = await PostAsync(request.Url, message);
+            (_, _, string responseText) = await PostAsync(request.Url, message);
 
             // -> 200 (OK) [Order]
 
@@ -346,7 +347,7 @@ namespace Carbon.Acme
             if (!IsInitialized) await InitializeAsync();
 
             // TODO: [Accept] : application/pem-certificate-chain
-            var body = await PostAsGetAsync(url);
+            string body = await PostAsGetAsync(url);
 
             // -> 200 
             // | Content-Type: application/pem-certificate-chain
@@ -383,7 +384,7 @@ namespace Carbon.Acme
         {
             if (_thumbprint is null)
             {
-                var key = Jwk.FromRSAParameters(_privateKey.ExportParameters(false));
+                Jwk key = Jwk.FromRSAParameters(_privateKey.ExportParameters(false));
 
                 string json = "{\"e\":\"" + key.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + key.Modulus + "\"}";
 
@@ -412,7 +413,7 @@ namespace Carbon.Acme
 
             // TXT _acme-challenge.{host} "{value}"
 
-            var result = GetKeyAuthorization(token);
+            string result = GetKeyAuthorization(token);
 
             using SHA256 sha256 = SHA256.Create();
 
@@ -536,7 +537,7 @@ namespace Carbon.Acme
             }
 
             // Content-Type is null when only a Location is returned
-            string contentType = response.Content.Headers.ContentType?.ToString();
+            string? contentType = response.Content.Headers.ContentType?.ToString();
 
             string responseText = await response.Content.ReadAsStringAsync();
 
@@ -582,7 +583,7 @@ namespace Carbon.Acme
         {
             Nonce nonce = await GetNonceAsync().ConfigureAwait(false);
 
-            var header = GetMessageHeader(url, nonce);
+            JsonObject header = GetMessageHeader(url, nonce);
 
             return Jws.Sign(
                 integrityProtected : Base64Url.Encode(header),
@@ -605,7 +606,7 @@ namespace Carbon.Acme
             }
             else
             {
-                var jwk = Jwk.FromRSAParameters(_privateKey.ExportParameters(includePrivateParameters: false));
+                Jwk jwk = Jwk.FromRSAParameters(_privateKey.ExportParameters(includePrivateParameters: false));
 
                 header.Add("jwk", JsonObject.FromObject(jwk));
             }
