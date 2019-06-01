@@ -7,10 +7,9 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void Construct()
         {
-            var action = new CompleteChallengeRequest("url", "123");
+            var action = new CompleteChallengeRequest("https://test.com");
             
-            Assert.Equal("url", action.Url);
-            Assert.Equal("123", action.KeyAuthorization);
+            Assert.Equal("https://test.com", action.Url);
         }
     }
 }

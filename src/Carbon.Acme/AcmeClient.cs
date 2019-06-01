@@ -227,8 +227,7 @@ namespace Carbon.Acme
             if (!IsInitialized) await InitializeAsync();
 
             var message = await GetSignedMessageAsync(
-                url     : request.Url,
-                payload : JsonObject.FromObject(request)
+                url: request.Url
             );
 
             var (_, _, responseText) = await PostAsync(request.Url, message);
@@ -505,12 +504,11 @@ namespace Carbon.Acme
             string url,
             JwsEncodedMessage message)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
-            {
+            var request = new HttpRequestMessage(HttpMethod.Post, url) {
                 Content = new StringContent(
-                    content: JsonObject.FromObject(message).ToString(false),
-                    encoding: Encoding.UTF8,
-                    mediaType: "application/jose+json"
+                    content   : JsonObject.FromObject(message).ToString(false),
+                    encoding  : Encoding.UTF8,
+                    mediaType : "application/jose+json"
                 )
             };
 
