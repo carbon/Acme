@@ -16,7 +16,8 @@ using Carbon.Json;
 namespace Carbon.Acme
 {
     // ---------------------------------------------------------------
-    // RFC 8555 | Automatic Certificate Management Environment (ACME)
+    // Automatic Certificate Management Environment (ACME)
+    // RFC 8555 | https://tools.ietf.org/html/rfc8555
     // ---------------------------------------------------------------
 
     public class AcmeClient
@@ -229,7 +230,10 @@ namespace Carbon.Acme
         {
             if (!IsInitialized) await InitializeAsync();
 
-            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url);
+            // The client indicates to the server that it is ready for the challenge validation by
+            // sending an empty JSON body ({}) carried in a POST request to the challenge URL
+            
+            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url, new JsonObject());
 
             (_, _, string responseText) = await PostAsync(request.Url, message);
 
@@ -615,6 +619,3 @@ namespace Carbon.Acme
         }
     }
 }
-
-// LATEST : https://tools.ietf.org/html/draft-ietf-acme-acme-12
-// LIVING : https://github.com/ietf-wg-acme/acme/blob/master/draft-ietf-acme-acme.md
