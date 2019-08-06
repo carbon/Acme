@@ -590,7 +590,7 @@ namespace Carbon.Acme
             JsonObject header = GetMessageHeader(url, nonce);
 
             return Jws.Sign(
-                integrityProtected : Base64Url.Encode(header),
+                integrityProtected : Base64Url.EncodeJson(header),
                 payload            : string.Empty,
                 privateKey         : _privateKey
             );
