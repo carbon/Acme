@@ -1,25 +1,24 @@
 ﻿#nullable disable
 
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    [DataContract]
     public class ValidationRecord
     {
-        [DataMember(Name = "url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
 
-        [DataMember(Name = "hostname")]
+        [JsonPropertyName("hostname")]
         public string Hostname { get; set; }
 
-        [DataMember(Name = "port")]
+        [JsonPropertyName("port")]
         public int Port { get; set; }
 
-        [DataMember(Name = "addressesResolved")]
+        [JsonPropertyName("addressesResolved")]
         public string[] AddressesResolved { get; set; }
 
-        [DataMember(Name = "addressUsed")]
+        [JsonPropertyName("addressUsed")]
         public string AddressUsed { get; set; }
     }
 }

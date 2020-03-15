@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 using Carbon.Extensions;
 
 namespace Carbon.Acme
 {
-    public class RevokeCertificateRequest
+    public sealed class RevokeCertificateRequest
     {
         public RevokeCertificateRequest(byte[] certificate, int? reason = null)
         {
@@ -22,10 +23,10 @@ namespace Carbon.Acme
         /// The certificate to be revoked, in the base64url-encoded version of the DER format. 
         /// Note: Because this field uses base64url, and does not include headers, it is different from PEM.
         /// </summary>
-        [DataMember(Name = "certificate", IsRequired = true)]
+        [JsonPropertyName("certificate")]
         public string Certificate { get; }
 
-        [DataMember(Name = "reason", EmitDefaultValue = false)]
+        [JsonPropertyName("reason")]
         public int? Reason { get; }
     }
 }

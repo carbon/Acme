@@ -1,6 +1,6 @@
 ﻿namespace Carbon.Acme
 {
-    public enum ChallengeStatus : byte
+    public enum ChallengeStatus
     {
         Unknown    = 0,
         Pending    = 1,

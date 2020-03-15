@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
@@ -6,7 +6,7 @@ namespace Carbon.Acme
     {
         public CreateAccountRequest(
             bool termsOfServiceAgreed,
-            string[] contact,
+            string[]? contact,
             bool? onlyReturnExisting = null)
         {
             TermsOfServiceAgreed = termsOfServiceAgreed;
@@ -14,19 +14,19 @@ namespace Carbon.Acme
             OnlyReturnExisting = onlyReturnExisting;
         }
 
-        [DataMember(Name = "termsOfServiceAgreed")]
+        [JsonPropertyName("termsOfServiceAgreed")]
         public bool TermsOfServiceAgreed { get; }
 
-        [DataMember(Name = "contact", EmitDefaultValue = false)]
-        public string[] Contact { get; }
+        [JsonPropertyName("contact")]
+        public string[]? Contact { get; }
 
-        [DataMember(Name = "onlyReturnExisting", EmitDefaultValue = false)]
+        [JsonPropertyName("onlyReturnExisting")]
         public bool? OnlyReturnExisting { get; }
     }
 }
 
-// TODO: externalAccountBinding support
 
+// TODO: externalAccountBinding support
 /*
 {
   "protected": base64url({

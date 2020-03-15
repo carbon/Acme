@@ -1,36 +1,37 @@
 ﻿#nullable disable
 
 using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 using Carbon.Acme.Exceptions;
 
 namespace Carbon.Acme
 {
-    [DataContract]
-    public class Order
+    public sealed class Order
     {
-        [IgnoreDataMember]
+        [JsonIgnore]
         public string Url { get; set; }
 
         /// <summary>
         /// pending, ready, processing, valid, invalid
         /// </summary>
-        [DataMember(Name = "status", IsRequired = true)]
+        [JsonPropertyName("status")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public OrderStatus Status { get; set; }
 
         /// <summary>
         /// The timestamp after which the server will consider this order invalid
         /// </summary>
-        [DataMember(Name = "expires", EmitDefaultValue = false)]
+        [JsonPropertyName("expires")]
         public DateTime? Expires { get; set; }
 
-        [DataMember(Name = "identifiers", IsRequired = true)]
+        [JsonPropertyName("identifiers")]
         public Identifier[] Identifiers { get; set; }
 
-        [DataMember(Name = "notBefore", EmitDefaultValue = false)]
+        [JsonPropertyName("notBefore")]
         public DateTime? NotBefore { get; set; }
 
-        [DataMember(Name = "notAfter", EmitDefaultValue = false)]
+        [JsonPropertyName("notAfter")]
         public DateTime? NotAfter { get; set; }
 
         /// <summary>
@@ -39,26 +40,28 @@ namespace Carbon.Acme
         /// For final orders (in the "valid" or "invalid" state), the authorizations that were completed.
         /// Each entry is a URL from which an authorization can be fetched with a GET request.
         /// </summary>
-        [DataMember(Name = "authorizations", IsRequired = true)]
+        [JsonPropertyName("authorizations")]
         public string[] AuthorizationUrls { get; set; }
 
         /// <summary>
         /// A URL that a CSR must be POSTed to once all of the order’s authorizations are satisfied to finalize the order. 
         /// The result of a successful finalization will be the population of the certificate URL for the order.
         /// </summary>
-        [DataMember(Name = "finalize", IsRequired = true)]
+        [JsonPropertyName("finalize")]
         public string FinalizeUrl { get; set; }
+
+#nullable enable
 
         /// <summary>
         /// A URL for the certificate that has been issued in response to this order.
         /// </summary>
-        [DataMember(Name = "certificate", EmitDefaultValue = false)]
-        public string CertificateUrl { get; set; }
+        [JsonPropertyName("certificate")]
+        public string? CertificateUrl { get; set; }
 
         /// <summary>
         /// The error that occurred while processing the order, if any. 
         /// </summary>
-        [DataMember(Name = "problem", EmitDefaultValue = false)]
-        public Problem Error { get; set; }
+        [JsonPropertyName("problem")]
+        public Problem? Error { get; set; }
     }
 }

@@ -1,44 +1,42 @@
 ﻿#nullable disable
 
 using System.Net.Http;
-using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-
-using Carbon.Json;
 
 namespace Carbon.Acme
 {
-    [DataContract]
-    public class Directory
+    public sealed class Directory
     {
-        [DataMember(Name = "newNonce")]
+        [JsonPropertyName("newNonce")]
         public string NewNonceUrl { get; set; }
 
-        [DataMember(Name = "newAccount")]
+        [JsonPropertyName("newAccount")]
         public string NewAccountUrl { get; set; }
 
-        [DataMember(Name = "newOrder")]
+        [JsonPropertyName("newOrder")]
         public string NewOrderUrl { get; set; }
 
-        [DataMember(Name = "newAuthz")]
+        [JsonPropertyName("newAuthz")]
         public string NewAuthorizationUrl { get; set; }
 
-        [DataMember(Name = "revokeCert")]
+        [JsonPropertyName("revokeCert")]
         public string RevokeCertificateUrl { get; set; }
 
-        [DataMember(Name = "keyChange")]
+        [JsonPropertyName("keyChange")]
         public string KeyChangeUrl { get; set; }
 
-        [DataMember(Name = "meta")]
+        [JsonPropertyName("meta")]
         public DirectoryMetadata Meta { get; set; }
         
-        public static async Task<Directory> GetAsync(string url = "https://acme-v02.api.letsencrypt.org/directory")
+        public static async ValueTask<Directory> GetAsync(string url = "https://acme-v02.api.letsencrypt.org/directory")
         {
             using HttpClient http = new HttpClient();
 
-            string responseText = await http.GetStringAsync(url);
+            var responseStream = await http.GetStreamAsync(url).ConfigureAwait(false);
 
-            return JsonObject.Parse(responseText).As<Directory>();
+            return await JsonSerializer.DeserializeAsync<Directory>(responseStream).ConfigureAwait(false);
         }
     }
 }

@@ -1,25 +1,24 @@
 ﻿#nullable disable
 
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme.Exceptions
 {
-    [DataContract]
     public class Problem
     {
-        [DataMember(Name = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [DataMember(Name = "detail")]
+        [JsonPropertyName("detail")]
         public string Detail { get; set; }
 
-        [DataMember(Name = "status", EmitDefaultValue = false)]
+        [JsonPropertyName("status")]
         public int? Status { get; set; }
 
-        [DataMember(Name = "instance", EmitDefaultValue = false)]
+        [JsonPropertyName("instance")]
         public string Instance { get; set; }
 
-        [DataMember(Name = "subproblems", EmitDefaultValue = false)]
+        [JsonPropertyName("subproblems")]
         public Subproblem[] Subproblems { get; set; }
     }
 }

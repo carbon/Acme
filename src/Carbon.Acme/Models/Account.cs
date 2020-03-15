@@ -1,24 +1,25 @@
 ﻿#nullable disable
 
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    public class Account
+    public sealed class Account
     {
-        [DataMember(Name = "status", IsRequired = true)]
+        [JsonPropertyName("status")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AccountStatus Status { get; set; }
 
-        [DataMember(Name = "contact")]
+        [JsonPropertyName("contact")]
         public string[] Contact { get; set; }
 
-        [DataMember(Name = "termsOfServiceAgreed")]
+        [JsonPropertyName("termsOfServiceAgreed")]
         public bool TermsOfServiceAgreed { get; set; }
 
-        [DataMember(Name = "orders", IsRequired = true)]
+        [JsonPropertyName("orders")]
         public string OrdersUrl { get; set; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public string Url { get; set; }
     }
 }

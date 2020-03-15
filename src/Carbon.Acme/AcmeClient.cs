@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Carbon.Acme.Exceptions;
 using Carbon.Extensions;
 using Carbon.Jose;
-using Carbon.Json;
 
 namespace Carbon.Acme
 {
@@ -47,16 +48,16 @@ namespace Carbon.Acme
 
         public async Task<string> GetAccountUrlAsync()
         {
-            await InitializeDirectoryAsync();
+            await InitializeDirectoryAsync().ConfigureAwait(false);
 
             var message = await GetSignedMessageAsync(
                 url     : _directory!.NewAccountUrl,
-                payload : new JsonObject {
-                    { "onlyReturnExisting", true }
+                payload : new {
+                   onlyReturnExisting = true
                 }
-            );
+            ).ConfigureAwait(false);
 
-            (_, string? location, _) = await PostAsync(_directory.NewAccountUrl, message);
+            (_, string? location, _) = await PostAsync(_directory.NewAccountUrl, message).ConfigureAwait(false);
 
             // -> 201 (OK) [Account]
 
@@ -72,7 +73,7 @@ namespace Carbon.Acme
 
             var message = await GetSignedMessageAsync(
                 url     : _directory!.NewAccountUrl,
-                payload : JsonObject.FromObject(request)
+                payload : request
             );
 
             (_, string? location, _) = await PostAsync(_directory.NewAccountUrl, message);
@@ -91,14 +92,14 @@ namespace Carbon.Acme
 
             var message = await GetSignedMessageAsync(
                 url     : _accountUrl!,
-                payload : JsonObject.FromObject(request)
-            );
+                payload : request
+            ).ConfigureAwait(false);
 
-            (_, _, string responseText) = await PostAsync(_accountUrl!, message);
+            (_, _, string responseText) = await PostAsync(_accountUrl!, message).ConfigureAwait(false);
 
             // -> 200 (OK) [Account]
 
-            return JsonObject.Parse(responseText).As<Account>();
+            return JsonSerializer.Deserialize<Account>(responseText);
         }
 
         // https://tools.ietf.org/html/draft-ietf-acme-acme-09#section-7.3.7
@@ -108,14 +109,14 @@ namespace Carbon.Acme
 
             var message = await GetSignedMessageAsync(
                 url     : _accountUrl!,
-                payload : JsonObject.FromObject(new DeactivateAccountRequest(_accountUrl!))
+                payload : new DeactivateAccountRequest(_accountUrl!)
             );
 
             var (_, _, responseText) = await PostAsync(_accountUrl!, message);
 
             // -> 200 (OK) [Account]
 
-            return JsonObject.Parse(responseText).As<Account>();
+            return JsonSerializer.Deserialize<Account>(responseText);
         }
 
         /*
@@ -163,7 +164,6 @@ namespace Carbon.Acme
             */
 
             return (result, retryAfter);
-
         }
 
         public async Task<Authorization> WaitForAuthorizationAsync(string url, TimeSpan timeout)
@@ -207,14 +207,14 @@ namespace Carbon.Acme
 
             var message = await GetSignedMessageAsync(
                 url     : request.Url,
-                payload : JsonObject.FromObject(request)
-            );
+                payload : request
+            ).ConfigureAwait(false);
 
-            var (_, _, responseText) = await PostAsync(request.Url, message);
+            var (_, _, responseText) = await PostAsync(request.Url, message).ConfigureAwait(false);
 
             // -> 200 (OK) [Authorization]
 
-            return JsonObject.Parse(responseText).As<Authorization>();
+            return JsonSerializer.Deserialize<Authorization>(responseText);
         }
 
         public async Task<Challenge> GetChallengeAsync(string url)
@@ -232,14 +232,14 @@ namespace Carbon.Acme
 
             // The client indicates to the server that it is ready for the challenge validation by
             // sending an empty JSON body ({}) carried in a POST request to the challenge URL
-            
-            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url, new JsonObject());
+
+            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url, new { } );
 
             (_, _, string responseText) = await PostAsync(request.Url, message);
 
             // -> 200 (OK) [Challenge]
 
-            return JsonObject.Parse(responseText).As<Challenge>();
+            return JsonSerializer.Deserialize<Challenge>(responseText);
         }
 
         #endregion
@@ -271,14 +271,14 @@ namespace Carbon.Acme
 
             var message = await GetSignedMessageAsync(
                 url     : _directory!.NewOrderUrl,
-                payload : JsonObject.FromObject(request)
-            );
+                payload : request
+            ).ConfigureAwait(false);
 
-            var (_, location, responseText) = await PostAsync(_directory.NewOrderUrl, message);
+            var (_, location, responseText) = await PostAsync(_directory.NewOrderUrl, message).ConfigureAwait(false);
 
             // -> 201 (Created) [Order]
 
-            var result = JsonObject.Parse(responseText).As<Order>();
+            var result = JsonSerializer.Deserialize<Order>(responseText);
 
             result.Url = location!;
 
@@ -290,18 +290,18 @@ namespace Carbon.Acme
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized) await InitializeAsync().ConfigureAwait(false);
 
             var message = await GetSignedMessageAsync(
-                url: request.Url,
-                payload: JsonObject.FromObject(request)
-            );
+                url     : request.Url,
+                payload : request
+            ).ConfigureAwait(false);
 
-            (_, _, string responseText) = await PostAsync(request.Url, message);
+            (_, _, string responseText) = await PostAsync(request.Url, message).ConfigureAwait(false);
 
             // -> 200 (OK) [Order]
 
-            return JsonObject.Parse(responseText).As<Order>();
+            return JsonSerializer.Deserialize<Order>(responseText);
         }
 
         public async Task<Order> WaitForCertificateAsync(string orderUrl, TimeSpan timeout)
@@ -368,14 +368,14 @@ namespace Carbon.Acme
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized) await InitializeAsync().ConfigureAwait(false);
 
             var message = await GetSignedMessageAsync(
               url     : _directory!.RevokeCertificateUrl,
-              payload : JsonObject.FromObject(request)
-            );
+              payload : request
+            ).ConfigureAwait(false);
 
-            await PostAsync(_directory.RevokeCertificateUrl, message);
+            await PostAsync(_directory.RevokeCertificateUrl, message).ConfigureAwait(false);
         }
 
         #endregion
@@ -480,9 +480,9 @@ namespace Carbon.Acme
 
             if (_directory is null)
             {
-                var responseText = await httpClient.GetStringAsync(_directoryUrl);
+                var directoryStream = await httpClient.GetStreamAsync(_directoryUrl).ConfigureAwait(false);
 
-                this._directory = JsonObject.Parse(responseText).As<Directory>();
+                this._directory = await JsonSerializer.DeserializeAsync<Directory>(directoryStream).ConfigureAwait(false);
             }
         }
 
@@ -498,11 +498,11 @@ namespace Carbon.Acme
         private async Task<T> PostAsGetAsync<T>(string url)
            where T : new()
         {
-            var message = await GetSignedMessageAsync(url);
+            var message = await GetSignedMessageAsync(url).ConfigureAwait(false);
 
-            (_, _, string responseText) = await PostAsync(url, message);
+            (_, _, string responseText) = await PostAsync(url, message).ConfigureAwait(false);
 
-            return JsonObject.Parse(responseText).As<T>();
+            return JsonSerializer.Deserialize<T>(responseText);
         }
 
         private async Task<(HttpStatusCode statusCode, string? location, string responseText)> PostAsync(
@@ -511,7 +511,7 @@ namespace Carbon.Acme
         {
             var request = new HttpRequestMessage(HttpMethod.Post, url) {
                 Content = new StringContent(
-                    content   : JsonObject.FromObject(message).ToString(false),
+                    content   : JsonSerializer.Serialize(message),
                     encoding  : Encoding.UTF8,
                     mediaType : "application/jose+json"
                 )
@@ -543,7 +543,7 @@ namespace Carbon.Acme
             // Content-Type is null when only a Location is returned
             string? contentType = response.Content.Headers.ContentType?.ToString();
 
-            string responseText = await response.Content.ReadAsStringAsync();
+            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             string? location = null;
 
@@ -554,7 +554,7 @@ namespace Carbon.Acme
 
             if (contentType == "application/problem+json")
             {
-                var problem = JsonObject.Parse(responseText).As<Problem>();
+                var problem = JsonSerializer.Deserialize<Problem>(responseText);
 
                 throw new AcmeException(problem);
             }
@@ -570,11 +570,11 @@ namespace Carbon.Acme
             return (response.StatusCode, location, responseText);
         }
 
-        private async Task<JwsEncodedMessage> GetSignedMessageAsync(string url, JsonObject payload)
+        private async Task<JwsEncodedMessage> GetSignedMessageAsync<T>(string url, T payload)
         {
             Nonce nonce = await GetNonceAsync().ConfigureAwait(false);
 
-            JsonObject header = GetMessageHeader(url, nonce);
+            Dictionary<string, object> header = GetMessageHeader(url, nonce);
 
             return Jws.Sign(
                 integrityProtectedHeader : header,
@@ -587,18 +587,18 @@ namespace Carbon.Acme
         {
             Nonce nonce = await GetNonceAsync().ConfigureAwait(false);
 
-            JsonObject header = GetMessageHeader(url, nonce);
+            Dictionary<string, object> header = GetMessageHeader(url, nonce);
 
             return Jws.Sign(
-                integrityProtected : Base64Url.EncodeJson(header),
-                payload            : string.Empty,
-                privateKey         : _privateKey
+                base64EncodedIntegrityProtectedHeader : GetBase64UrlEncodedJson(header),
+                base64UrlEncodedPayload               : string.Empty,
+                privateKey                            : _privateKey
             );
         }
 
-        private JsonObject GetMessageHeader(string url, Nonce nonce)
+        private Dictionary<string, object> GetMessageHeader(string url, Nonce nonce)
         {
-            var header = new JsonObject {
+            var header = new Dictionary<string, object>(5) {
                 { "alg",   AlgorithmNames.RS256 },
                 { "nonce", nonce.Value },
                 { "url",   url }
@@ -612,10 +612,19 @@ namespace Carbon.Acme
             {
                 Jwk jwk = Jwk.FromRSAParameters(_privateKey.ExportParameters(includePrivateParameters: false));
 
-                header.Add("jwk", JsonObject.FromObject(jwk));
+                header.Add("jwk", jwk);
             }
 
             return header;
+        }
+
+        private static readonly JsonSerializerOptions jso = new JsonSerializerOptions { IgnoreNullValues = true };
+
+        private string GetBase64UrlEncodedJson<T>(T instance)
+        {
+            byte[] utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(instance, jso);
+
+            return Base64Url.Encode(utf8Bytes);
         }
     }
 }

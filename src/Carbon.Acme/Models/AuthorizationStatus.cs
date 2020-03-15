@@ -1,6 +1,6 @@
 ﻿namespace Carbon.Acme
 {
-    public enum AuthorizationStatus : byte
+    public enum AuthorizationStatus
     {
         Pending     = 1,
         Valid       = 2,

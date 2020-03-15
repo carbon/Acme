@@ -1,26 +1,26 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    public class DirectoryMetadata
+    public sealed class DirectoryMetadata
     {
         /// <summary>
         /// A URL identifying the current terms of service.
         /// </summary>
-        [DataMember(Name = "termsOfService")]
+        [JsonPropertyName("termsOfService")]
         public string? TermsOfService { get; set; }
 
         /// <summary>
         /// An HTTP or HTTPS URL locating a website providing 
         /// more information about the ACME server.
         /// </summary>
-        [DataMember(Name = "website")]
+        [JsonPropertyName("website")]
         public string? Website { get; set; }
 
-        [DataMember(Name = "caaIdentities")]
+        [JsonPropertyName("caaIdentities")]
         public string[]? CaaIdentities { get; set; }
 
-        [DataMember(Name = "externalAccountRequired")]
+        [JsonPropertyName("externalAccountRequired")]
         public bool? ExternalAccountRequired { get; set; }
     }
 }

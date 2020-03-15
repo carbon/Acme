@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
@@ -25,13 +25,13 @@ namespace Carbon.Acme
             NotAfter = notAfter;
         }
 
-        [DataMember(Name = "identifiers", IsRequired = true)]
+        [JsonPropertyName("identifiers")]
         public Identifier[] Identifiers { get; }
 
-        [DataMember(Name = "notBefore", EmitDefaultValue = false)]
+        [JsonPropertyName("notBefore")]
         public DateTime? NotBefore { get; }
 
-        [DataMember(Name = "notAfter", EmitDefaultValue = false)]
+        [JsonPropertyName("notAfter")]
         public DateTime? NotAfter { get; }
     }
 }

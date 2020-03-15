@@ -1,31 +1,31 @@
 ﻿#nullable disable
 
 using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    [DataContract]
-    public class Authorization
+    public sealed class Authorization
     {
         /// <summary>
         /// The identifier that the account is authorized to represent.
         /// </summary>
-        [DataMember(Name = "identifier", IsRequired = true)]
+        [JsonPropertyName("identifier")]
         public Identifier Identifier { get; set; }
 
         /// <summary>
         /// The status of this authorization. 
         /// Possible values are: “pending”, “valid”, “invalid”, “deactivated”, “expired”, and “revoked”.
         /// </summary>
-        [DataMember(Name = "status", IsRequired = true)]
+        [JsonPropertyName("status")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AuthorizationStatus Status { get; set; }
 
         /// <summary>
         /// The timestamp after which the server will consider this authorization invalid.
         /// This field is REQUIRED for objects with "valid" in the "status" field.
         /// </summary>
-        [DataMember(Name = "expires", EmitDefaultValue = false)]
+        [JsonPropertyName("expires")]
         public DateTime? Expires { get; set; }
 
         /// <summary>
@@ -34,10 +34,10 @@ namespace Carbon.Acme
         /// For final authorizations (in the "valid" or "invalid" state),
         /// the challenges that were used. 
         /// </summary>
-        [DataMember(Name = "challenges", IsRequired = true)]
+        [JsonPropertyName("challenges")]
         public Challenge[] Challenges { get; set; }
 
-        [DataMember(Name = "wildcard")]
+        [JsonPropertyName("wildcard")]
         public bool? Wildcard { get; set; }
     }
 }

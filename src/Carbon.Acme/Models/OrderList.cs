@@ -1,12 +1,12 @@
 ﻿#nullable disable
 
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    public class OrderList
+    public sealed class OrderList
     {
-        [DataMember(Name = "orders")]
+        [JsonPropertyName("orders")]
         public string[] Urls { get; set; }
 
         // TODO Next

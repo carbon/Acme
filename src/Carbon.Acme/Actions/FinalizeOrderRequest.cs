@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 using Carbon.Extensions;
 
 namespace Carbon.Acme
 {
-    public class FinalizeOrderRequest
+    public sealed class FinalizeOrderRequest
     {
         public FinalizeOrderRequest(string url, byte[] csr)
         {
@@ -18,7 +19,7 @@ namespace Carbon.Acme
             Csr = csr ?? throw new ArgumentNullException(nameof(csr));
         }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public string Url { get; }
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace Carbon.Acme
         /// The CSR is sent in the base64url-encoded version of the DER format. 
         /// Note: Because this field uses base64url, and does not include headers, it is different from PEM.).
         /// </summary>
-        [DataMember(Name = "csr", IsRequired = true)]
+        [JsonPropertyName("csr")]
         public string Csr { get; }
     }
 }

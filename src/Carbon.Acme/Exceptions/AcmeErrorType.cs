@@ -1,6 +1,6 @@
 ﻿namespace Carbon.Acme.Exceptions
 {
-    public enum AcmeErrorType : byte
+    public enum AcmeErrorType
     {
         Unknown = 0,
 

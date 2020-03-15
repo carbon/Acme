@@ -1,31 +1,32 @@
 ﻿#nullable disable
 
 using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 using Carbon.Acme.Exceptions;
 
 namespace Carbon.Acme
 {
-    public class Challenge
+    public sealed class Challenge
     {
         // http-01 | dns-01 | tls-sni-02
-        [DataMember(Name = "type", IsRequired = true)]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         /// <summary>
         /// The URL to which a response can be posted.
         /// </summary>
-        [DataMember(Name = "url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
 
         /// <summary>
         /// The status of this challenge. Possible values are: "pending", "valid", and "invalid".
         /// </summary>
-        [DataMember(Name = "status")]
+        [JsonPropertyName("status")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ChallengeStatus Status { get; set; }
 
-        [DataMember(Name = "token")]
+        [JsonPropertyName("token")]
         public string Token { get; set; }
 
         /// <summary>
@@ -33,14 +34,16 @@ namespace Carbon.Acme
         /// encoded in the format specified in RFC 3339 {{RFC3339}}. 
         /// This field is REQUIRED if the "status" field is "valid".
         /// </summary>
-        [DataMember(Name = "validated")]
+        [JsonPropertyName("validated")]
         public DateTime? Validated { get; set; }
 
-        [DataMember(Name = "keyAuthorization", EmitDefaultValue = false)]
-        public string KeyAuthorization { get; set; }
+#nullable enable
 
-        [DataMember(Name = "error", EmitDefaultValue = false)]
-        public Problem Error { get; set; }
+        [JsonPropertyName("keyAuthorization")]
+        public string? KeyAuthorization { get; set; }
+
+        [JsonPropertyName("error")]
+        public Problem? Error { get; set; }
     }
 }
 

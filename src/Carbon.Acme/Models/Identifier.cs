@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
@@ -15,10 +15,10 @@ namespace Carbon.Acme
             Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        [DataMember(Name = "type", IsRequired = true)]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [DataMember(Name = "value", IsRequired = true)]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
 
         #region IEquatable

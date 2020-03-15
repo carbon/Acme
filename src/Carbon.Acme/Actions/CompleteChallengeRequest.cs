@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
@@ -10,7 +10,7 @@ namespace Carbon.Acme
             Url = url ?? throw new ArgumentNullException(nameof(url));
         }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public string Url { get; }
     }
 }

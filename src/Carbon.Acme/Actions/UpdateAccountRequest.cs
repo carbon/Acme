@@ -1,12 +1,12 @@
 ﻿#nullable disable
 
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
     public class UpdateAccountRequest
     {
-        [DataMember(Name = "contact", EmitDefaultValue = false)]
+        [JsonPropertyName("contact")]
         public string[] Contact { get; set; }
     }
 }

@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    public class DeactivateAccountRequest
+    public sealed class DeactivateAccountRequest
     {
         public DeactivateAccountRequest(string url)
         {
             Url = url ?? throw new ArgumentNullException(nameof(url));
         }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public string Url { get; }
 
-        [DataMember(Name = "status")]
+        [JsonPropertyName("status")]
         public string Status => "deactivated";
     }
 }
