@@ -1,4 +1,5 @@
-using Carbon.Json;
+
+using System.Text.Json;
 using Xunit;
 
 namespace Carbon.Acme.Tests
@@ -22,8 +23,8 @@ namespace Carbon.Acme.Tests
     ""externalAccountRequired"": false
     }
 }";
-            
-            var model = JsonObject.Parse(text).As<Directory>();
+
+            var model = JsonSerializer.Deserialize<Directory>(text);
             
             Assert.Equal("https://example.com/acme/new-nonce",   model.NewNonceUrl);
             Assert.Equal("https://example.com/acme/new-authz",   model.NewAuthorizationUrl);

@@ -1,12 +1,12 @@
-﻿using Carbon.Data;
-using Carbon.Json;
+﻿using System.Text.Json;
+
 using Xunit;
 
 namespace Carbon.Acme.Tests
 {
     public class AuthorizationTest
     {
-        [Fact] // ensure these do not changed
+        [Fact]
         public void StatusCodes()
         {
             Assert.Equal(1, (int)AuthorizationStatus.Pending);
@@ -20,29 +20,27 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void Parse()
         {
-            var model = JsonObject.Parse(@"{
+            var model = JsonSerializer.Deserialize<Authorization>(@"{
   ""status"": ""valid"",
   ""expires"": ""2015-03-01T14:09:00Z"",
-
   ""identifier"": {
     ""type"": ""dns"",
     ""value"": ""example.org""
   },
-
   ""challenges"": [
     {
       ""url"": ""https://example.com/authz/1234/0"",
       ""type"": ""http-01"",
       ""status"": ""valid"",
-      ""token"": ""DGyRejmCefe7v4NfDGDKfA""
+      ""token"": ""DGyRejmCefe7v4NfDGDKfA"",
       ""validated"": ""2014-12-01T12:05:00Z"",
       ""keyAuthorization"": ""SXQe-2XODaDxNR...vb29HhjjLPSggwiE""
     }
   ],
   ""wildcard"": false
-}").As<Authorization>();
+}");
             
-            Assert.Equal(IsoDate.Parse("2015-03-01T14:09:00Z").ToUtcDateTime(), model.Expires);
+            Assert.Equal("2015-03-01T14:09:00.0000000Z", model.Expires.Value.ToString("o"));
 
             Assert.Equal(AuthorizationStatus.Valid, model.Status);
 
@@ -56,7 +54,6 @@ namespace Carbon.Acme.Tests
 
             Assert.Equal("https://example.com/authz/1234/0", challenge.Url);
             Assert.Equal(ChallengeStatus.Valid,  challenge.Status);
-            Assert.Equal(IsoDate.Parse("2014-12-01T12:05:00Z").ToUtcDateTime(), challenge.Validated);
             Assert.Equal("DGyRejmCefe7v4NfDGDKfA", challenge.Token);
             
         }

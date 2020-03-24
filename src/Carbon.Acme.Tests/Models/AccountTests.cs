@@ -1,4 +1,5 @@
-﻿using Carbon.Json;
+﻿using System.Text.Json;
+
 using Xunit;
 
 namespace Carbon.Acme.Tests
@@ -8,7 +9,7 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void A()
         {
-            Account model = JsonObject.Parse(@"{
+            Account model = JsonSerializer.Deserialize<Account>(@"{
   ""status"": ""valid"",
   ""contact"": [
     ""mailto:cert-admin@example.com"",
@@ -16,14 +17,14 @@ namespace Carbon.Acme.Tests
   ],
   ""termsOfServiceAgreed"": true,
   ""orders"": ""https://example.com/acme/acct/1/orders""
-}").As<Account>();
+}");
 
             Assert.Equal("mailto:cert-admin@example.com", model.Contact[0]);
-            Assert.Equal(AccountStatus.Valid, model.Status);
+            Assert.Equal("tel:+12025551212",              model.Contact[1]);
+            Assert.Equal(AccountStatus.Valid,             model.Status);
+
             Assert.True(model.TermsOfServiceAgreed);
             Assert.Equal("https://example.com/acme/acct/1/orders", model.OrdersUrl);
         }
     }
-
-
 }

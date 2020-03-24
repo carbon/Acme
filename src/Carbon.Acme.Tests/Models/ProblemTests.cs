@@ -1,4 +1,7 @@
-﻿using Carbon.Json;
+﻿using System.Text.Json;
+
+using Carbon.Acme.Exceptions;
+
 using Xunit;
 
 namespace Carbon.Acme.Tests
@@ -8,19 +11,19 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void A()
         {
-            var model = JsonObject.Parse(@"{
+            var model = JsonSerializer.Deserialize<Problem>(@"{
   ""type"": ""urn:ietf:params:acme:error:unauthorized"",
   ""detail"": ""No authorization provided for name example.net""
-}").As<Problem>();
+}");
 
             Assert.Equal("urn:ietf:params:acme:error:unauthorized",         model.Type);
             Assert.Equal("No authorization provided for name example.net",  model.Detail);
         }
 
         [Fact]
-        public void B()
+        public void CanParseNestedSubproblems()
         {
-            var model = JsonObject.Parse(@"{
+            string json = @"{
     ""type"": ""urn:ietf:params:acme:error:malformed"",
     ""detail"": ""Some of the identifiers requested were rejected"",
     ""subproblems"": [
@@ -41,14 +44,18 @@ namespace Carbon.Acme.Tests
             }
         }
     ]
-}").As<Problem>();
+}";
+            var model = JsonSerializer.Deserialize<Problem>(json);
 
             Assert.Equal("urn:ietf:params:acme:error:malformed",            model.Type);
             Assert.Equal("Some of the identifiers requested were rejected", model.Detail);
+
+            Assert.Equal(2, model.Subproblems.Length);
             Assert.Equal("urn:ietf:params:acme:error:malformed",            model.Subproblems[0].Type);
             Assert.Equal(new Identifier("dns", "_example.com"),             model.Subproblems[0].Identifier);
 
-            Assert.Equal("urn:ietf:params:acme:error:rejectedIdentifier", model.Subproblems[1].Type);
+            Assert.Equal("urn:ietf:params:acme:error:rejectedIdentifier",    model.Subproblems[1].Type);
+            
         }
     }
 }

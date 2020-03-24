@@ -1,4 +1,5 @@
-﻿using Carbon.Json;
+﻿using System.Text.Json;
+
 using Xunit;
 
 namespace Carbon.Acme.Tests
@@ -9,12 +10,12 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void ParseDns01()
         {
-            var model = JsonObject.Parse(@"{
+            var model = JsonSerializer.Deserialize<Challenge>(@"{
   ""type"": ""dns-01"",
   ""url"": ""https://example.com/acme/authz/1234/2"",
   ""status"": ""pending"",
   ""token"": ""evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA""
-}").As<Challenge>();
+}");
 
             Assert.Equal("dns-01",                                      model.Type);
             Assert.Equal("https://example.com/acme/authz/1234/2",       model.Url);
@@ -25,12 +26,12 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void ParseHttp01()
         {
-            var model = JsonObject.Parse(@"{
+            var model = JsonSerializer.Deserialize<Challenge>(@"{
   ""type"": ""http-01"",
   ""url"": ""https://example.com/acme/authz/0"",
   ""status"": ""valid"",
   ""token"": ""LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0""
-}").As<Challenge>();
+}");
 
             Assert.Equal("http-01", model.Type);
             Assert.Equal("https://example.com/acme/authz/0", model.Url);
@@ -41,7 +42,7 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void PArseWithError()
         {
-            var model = JsonObject.Parse(@"{
+            var model = JsonSerializer.Deserialize<Challenge>(@"{
       ""type"": ""dns-01"",
       ""status"": ""invalid"",
       ""error"": {
@@ -51,7 +52,7 @@ namespace Carbon.Acme.Tests
       },
       ""url"": ""https://acme-v02.api.letsencrypt.org/acme/challenge/x/x"",
       ""token"": ""x""
-    }").As<Challenge>();
+    }");
 
             Assert.Equal("dns-01", model.Type);
             Assert.Equal(ChallengeStatus.Invalid, model.Status);
