@@ -388,7 +388,7 @@ namespace Carbon.Acme
         {
             if (_thumbprint is null)
             {
-                Jwk key = Jwk.FromRSAParameters(_privateKey.ExportParameters(false));
+                Jwk key = Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(false));
 
                 string json = "{\"e\":\"" + key.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + key.Modulus + "\"}";
 
@@ -552,7 +552,7 @@ namespace Carbon.Acme
                 location = string.Join(";", locationHeader);
             }
 
-            if (contentType == "application/problem+json")
+            if (string.Equals(contentType, "application/problem+json", StringComparison.Ordinal))
             {
                 var problem = JsonSerializer.Deserialize<Problem>(responseText);
 
@@ -610,7 +610,7 @@ namespace Carbon.Acme
             }
             else
             {
-                Jwk jwk = Jwk.FromRSAParameters(_privateKey.ExportParameters(includePrivateParameters: false));
+                Jwk jwk = Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(includePrivateParameters: false));
 
                 header.Add("jwk", jwk);
             }
