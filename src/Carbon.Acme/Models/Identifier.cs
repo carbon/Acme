@@ -23,9 +23,11 @@ namespace Carbon.Acme
 
         #region IEquatable
 
-        public bool Equals(Identifier other) =>
-            Type == other.Type &&
-            Value == other.Value;
+        public bool Equals(Identifier other)
+        {
+            return string.Equals(Type, other.Type, StringComparison.Ordinal) 
+                && string.Equals(Value, other.Value, StringComparison.Ordinal);
+        }
 
         #endregion
     }
