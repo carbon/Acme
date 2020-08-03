@@ -1,4 +1,5 @@
-﻿using Carbon.Json;
+﻿
+using System.Text.Json;
 using Xunit;
 
 namespace Carbon.Acme.Tests
@@ -8,10 +9,11 @@ namespace Carbon.Acme.Tests
         [Fact]
         public void Construct()
         {
-            var action = new CreateOrderRequest("test.com");
+            var request = new CreateOrderRequest("test.com");
             
-            Assert.Equal(new Identifier("dns", "test.com"), action.Identifiers[0]);
+            Assert.Equal(new Identifier("dns", "test.com"), request.Identifiers[0]);
 
+  
             Assert.Equal(@"{
   ""identifiers"": [
     {
@@ -19,7 +21,12 @@ namespace Carbon.Acme.Tests
       ""value"": ""test.com""
     }
   ]
-}", JsonObject.FromObject(action).ToString());
+}", JsonSerializer.Serialize(request, new JsonSerializerOptions {
+                WriteIndented = true, 
+                IgnoreNullValues = true 
+            } ));
+
+
         }
     }
 }
