@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -35,7 +36,7 @@ namespace Carbon.Acme
         private string? _accountUrl;
         private Directory? _directory;
 
-        private readonly ConcurrentQueue<Nonce> nonces = new ConcurrentQueue<Nonce>();
+        private readonly ConcurrentQueue<Nonce> nonces = new ();
 
         public AcmeClient(RSA privateKey, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
         {
@@ -69,14 +70,14 @@ namespace Carbon.Acme
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
-            await InitializeDirectoryAsync();
+            await InitializeDirectoryAsync().ConfigureAwait(false);
 
             var message = await GetSignedMessageAsync(
                 url     : _directory!.NewAccountUrl,
                 payload : request
-            );
+            ).ConfigureAwait(false);
 
-            (_, string? location, _) = await PostAsync(_directory.NewAccountUrl, message);
+            (_, string? location, _) = await PostAsync(_directory.NewAccountUrl, message).ConfigureAwait(false);
 
             this._accountUrl = location;
 
@@ -88,7 +89,10 @@ namespace Carbon.Acme
         // https://tools.ietf.org/html/draft-ietf-acme-acme-09#section-7.3.2
         public async Task<Account> UpdateAccountAsync(UpdateAccountRequest request)
         {
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             var message = await GetSignedMessageAsync(
                 url     : _accountUrl!,
@@ -99,24 +103,27 @@ namespace Carbon.Acme
 
             // -> 200 (OK) [Account]
 
-            return JsonSerializer.Deserialize<Account>(responseText);
+            return JsonSerializer.Deserialize<Account>(responseText)!;
         }
 
         // https://tools.ietf.org/html/draft-ietf-acme-acme-09#section-7.3.7
         public async Task<Account> DeactivateAccountAsync()
         {
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             var message = await GetSignedMessageAsync(
                 url     : _accountUrl!,
                 payload : new DeactivateAccountRequest(_accountUrl!)
-            );
+            ).ConfigureAwait(false);
 
-            var (_, _, responseText) = await PostAsync(_accountUrl!, message);
+            var (_, _, responseText) = await PostAsync(_accountUrl!, message).ConfigureAwait(false);
 
             // -> 200 (OK) [Account]
 
-            return JsonSerializer.Deserialize<Account>(responseText);
+            return JsonSerializer.Deserialize<Account>(responseText)!;
         }
 
         /*
@@ -138,12 +145,12 @@ namespace Carbon.Acme
         {
             if (url is null) throw new ArgumentNullException(nameof(url));
 
-            return (await GetAuthorizationAsyncInternal(url)).authorization;
+            return (await GetAuthorizationAsyncInternal(url).ConfigureAwait(false)).authorization;
         }
 
         private async Task<(Authorization authorization, TimeSpan retryAfter)> GetAuthorizationAsyncInternal(string url)
         {
-            var result = await PostAsGetAsync<Authorization>(url);
+            var result = await PostAsGetAsync<Authorization>(url).ConfigureAwait(false);
 
             var retryAfter = TimeSpan.FromSeconds(2);
 
@@ -183,15 +190,15 @@ namespace Carbon.Acme
             Authorization result;
             TimeSpan retryAfter;
 
-            (result, retryAfter) = await GetAuthorizationAsyncInternal(url);
+            (result, retryAfter) = await GetAuthorizationAsyncInternal(url).ConfigureAwait(false);
 
             int retryCount = 0;
 
             while (result.Status == AuthorizationStatus.Pending && retryCount < 5)
             {
-                await Task.Delay(retryAfter);
+                await Task.Delay(retryAfter).ConfigureAwait(false);
 
-                (result, retryAfter) = await GetAuthorizationAsyncInternal(url);
+                (result, retryAfter) = await GetAuthorizationAsyncInternal(url).ConfigureAwait(false);
 
                 if (sw.Elapsed >= timeout) break;
 
@@ -214,32 +221,35 @@ namespace Carbon.Acme
 
             // -> 200 (OK) [Authorization]
 
-            return JsonSerializer.Deserialize<Authorization>(responseText);
+            return JsonSerializer.Deserialize<Authorization>(responseText)!;
         }
 
         public async Task<Challenge> GetChallengeAsync(string url)
         {
             if (url is null) throw new ArgumentNullException(nameof(url));
 
-            return await PostAsGetAsync<Challenge>(url);
+            return await PostAsGetAsync<Challenge>(url).ConfigureAwait(false);
         }
 
         // 7.5.1.  Responding to Challenges
         // https://tools.ietf.org/html/draft-ietf-acme-acme-10#section-7.5.1
         public async Task<Challenge> CompleteChallengeAsync(CompleteChallengeRequest request)
         {
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             // The client indicates to the server that it is ready for the challenge validation by
             // sending an empty JSON body ({}) carried in a POST request to the challenge URL
 
-            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url, new { } );
+            JwsEncodedMessage message = await GetSignedMessageAsync(request.Url, new { } ).ConfigureAwait(false);
 
-            (_, _, string responseText) = await PostAsync(request.Url, message);
+            (_, _, string responseText) = await PostAsync(request.Url, message).ConfigureAwait(false);
 
             // -> 200 (OK) [Challenge]
 
-            return JsonSerializer.Deserialize<Challenge>(responseText);
+            return JsonSerializer.Deserialize<Challenge>(responseText)!;
         }
 
         #endregion
@@ -250,7 +260,7 @@ namespace Carbon.Acme
         {
             if (url is null) throw new ArgumentNullException(nameof(url));
 
-            return await PostAsGetAsync<Order>(url);
+            return await PostAsGetAsync<Order>(url).ConfigureAwait(false);
         }
 
         public async Task<OrderList> ListOrdersAsync(string url)
@@ -259,7 +269,7 @@ namespace Carbon.Acme
 
             // Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
 
-            return await PostAsGetAsync<OrderList>(url);
+            return await PostAsGetAsync<OrderList>(url).ConfigureAwait(false);
         }
 
         // POST /acme/new-order
@@ -267,7 +277,10 @@ namespace Carbon.Acme
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             var message = await GetSignedMessageAsync(
                 url     : _directory!.NewOrderUrl,
@@ -278,7 +291,7 @@ namespace Carbon.Acme
 
             // -> 201 (Created) [Order]
 
-            var result = JsonSerializer.Deserialize<Order>(responseText);
+            var result = JsonSerializer.Deserialize<Order>(responseText)!;
 
             result.Url = location!;
 
@@ -290,7 +303,10 @@ namespace Carbon.Acme
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
-            if (!IsInitialized) await InitializeAsync().ConfigureAwait(false);
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             var message = await GetSignedMessageAsync(
                 url     : request.Url,
@@ -301,7 +317,7 @@ namespace Carbon.Acme
 
             // -> 200 (OK) [Order]
 
-            return JsonSerializer.Deserialize<Order>(responseText);
+            return JsonSerializer.Deserialize<Order>(responseText)!;
         }
 
         public async Task<Order> WaitForCertificateAsync(string orderUrl, TimeSpan timeout)
@@ -318,7 +334,7 @@ namespace Carbon.Acme
 
             var sw = Stopwatch.StartNew();
 
-            Order result = await GetOrderAsync(orderUrl);
+            Order result = await GetOrderAsync(orderUrl).ConfigureAwait(false);
 
             var retryAfter = TimeSpan.FromSeconds(1);
 
@@ -328,9 +344,9 @@ namespace Carbon.Acme
 
             while (result.Status != OrderStatus.Valid && retryCount < 5)
             {
-                await Task.Delay(retryAfter);
+                await Task.Delay(retryAfter).ConfigureAwait(false);
 
-                result = await GetOrderAsync(orderUrl);
+                result = await GetOrderAsync(orderUrl).ConfigureAwait(false);
 
                 if (sw.Elapsed >= timeout) break;
 
@@ -348,18 +364,21 @@ namespace Carbon.Acme
         {
             if (url is null) throw new ArgumentNullException(nameof(url));
 
-            if (!IsInitialized) await InitializeAsync();
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             // TODO: [Accept] : application/pem-certificate-chain
-            string body = await PostAsGetAsync(url);
+            string body = await PostAsGetAsync(url).ConfigureAwait(false);
 
             // -> 200 
             // | Content-Type: application/pem-certificate-chain
             // | Link: <https://example.com/acme/some-directory>;rel="index"
 
             return new DownloadCertificateResult(
-                contentType: "application/pem-certificate-chain",
-                body: body
+                contentType : "application/pem-certificate-chain",
+                body        : body
             );
         }
 
@@ -368,7 +387,10 @@ namespace Carbon.Acme
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 
-            if (!IsInitialized) await InitializeAsync().ConfigureAwait(false);
+            if (!IsInitialized)
+            {
+                await InitializeAsync().ConfigureAwait(false);
+            }
 
             var message = await GetSignedMessageAsync(
               url     : _directory!.RevokeCertificateUrl,
@@ -388,10 +410,11 @@ namespace Carbon.Acme
         {
             if (_thumbprint is null)
             {
-                Jwk key = Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(false));
+                _jwk ??= Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(false));
 
-                string json = "{\"e\":\"" + key.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + key.Modulus + "\"}";
+                string json = "{\"e\":\"" + _jwk.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + _jwk.Modulus + "\"}";
 
+                // .NET 5.0 TODO: Use one shot hash
                 using SHA256 sha256 = SHA256.Create();
 
                 byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
@@ -419,6 +442,8 @@ namespace Carbon.Acme
 
             string result = GetKeyAuthorization(token);
 
+            // .NET 5.0 TODO: Use one shot hash
+
             using SHA256 sha256 = SHA256.Create();
 
             byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(result));
@@ -436,7 +461,7 @@ namespace Carbon.Acme
         {
             if (_directory is null)
             {
-                await InitializeDirectoryAsync();
+                await InitializeDirectoryAsync().ConfigureAwait(false);
             }
 
             while (nonces.TryDequeue(out Nonce nonce))
@@ -453,7 +478,7 @@ namespace Carbon.Acme
             // HEAD /acme/new-nonce HTTP/1.1 ->
             // Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 
-            using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, _directory!.NewNonceUrl));
+            using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, _directory!.NewNonceUrl)).ConfigureAwait(false);
 
             string replayNonce = response.Headers.GetValues("Replay-Nonce").First();
 
@@ -462,15 +487,19 @@ namespace Carbon.Acme
 
         #endregion
 
-        public bool IsInitialized => _accountUrl != null && _directory != null;
+        private Jwk? _jwk;
+
+        internal Jwk Jwk => _jwk ??= Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(includePrivateParameters: false));
+
+        public bool IsInitialized => _accountUrl is not null && _directory is not null;
 
         public async Task InitializeAsync()
         {
-            await InitializeDirectoryAsync();
+            await InitializeDirectoryAsync().ConfigureAwait(false);
 
             if (_accountUrl is null)
             {
-                this._accountUrl = await GetAccountUrlAsync();
+                this._accountUrl = await GetAccountUrlAsync().ConfigureAwait(false);
             }
         }
 
@@ -488,9 +517,9 @@ namespace Carbon.Acme
 
         private async Task<string> PostAsGetAsync(string url)
         {
-            var message = await GetSignedMessageAsync(url);
+            var message = await GetSignedMessageAsync(url).ConfigureAwait(false);
 
-            (_, _, string responseText) = await PostAsync(url, message);
+            (_, _, string responseText) = await PostAsync(url, message).ConfigureAwait(false);
 
             return responseText;
         }
@@ -502,7 +531,7 @@ namespace Carbon.Acme
 
             (_, _, string responseText) = await PostAsync(url, message).ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<T>(responseText);
+            return JsonSerializer.Deserialize<T>(responseText)!;
         }
 
         private async Task<(HttpStatusCode statusCode, string? location, string responseText)> PostAsync(
@@ -518,14 +547,14 @@ namespace Carbon.Acme
             };
 
             // Remove the charset
-            request.Content.Headers.ContentType.CharSet = null;
+            request.Content.Headers.ContentType!.CharSet = null;
 
-            return await SendAsync(request);
+            return await SendAsync(request).ConfigureAwait(false);
         }
 
         private async Task<(HttpStatusCode statusCode, string? location, string responseText)> SendAsync(HttpRequestMessage request)
         {
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
             // capture the replay nonce for the next request
             if (request.Method == HttpMethod.Post &&
@@ -549,12 +578,12 @@ namespace Carbon.Acme
 
             if (response.Headers.TryGetValues("Location", out var locationHeader))
             {
-                location = string.Join(";", locationHeader);
+                location = locationHeader.FirstOrDefault();
             }
 
-            if (string.Equals(contentType, "application/problem+json", StringComparison.Ordinal))
+            if (contentType is "application/problem+json")
             {
-                var problem = JsonSerializer.Deserialize<Problem>(responseText);
+                var problem = JsonSerializer.Deserialize<Problem>(responseText)!;
 
                 throw new AcmeException(problem);
             }
@@ -604,23 +633,21 @@ namespace Carbon.Acme
                 { "url",   url }
             };
 
-            if (_accountUrl != null)
+            if (_accountUrl is not null)
             {
                 header.Add("kid", _accountUrl);
             }
             else
             {
-                Jwk jwk = Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(includePrivateParameters: false));
-
-                header.Add("jwk", jwk);
+                header.Add("jwk", Jwk);
             }
 
             return header;
         }
 
-        private static readonly JsonSerializerOptions jso = new JsonSerializerOptions { IgnoreNullValues = true };
+        private static readonly JsonSerializerOptions jso = new () { IgnoreNullValues = true };
 
-        private string GetBase64UrlEncodedJson<T>(T instance)
+        private static string GetBase64UrlEncodedJson<T>(T instance)
         {
             byte[] utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(instance, jso);
 

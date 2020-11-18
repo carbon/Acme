@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Carbon.Acme.Exceptions
 {
-    public class Problem
+    public sealed class Problem
     {
         [JsonPropertyName("type")]
         public string Type { get; set; }

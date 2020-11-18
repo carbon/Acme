@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Carbon.Acme.Exceptions
 {
     [DataContract]
-    public class Subproblem
+    public sealed class Subproblem
     {
         [JsonPropertyName("type")]
         public string Type { get; set; }
