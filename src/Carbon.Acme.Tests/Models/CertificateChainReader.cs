@@ -1,22 +1,23 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
-
-using Carbon.Pkcs;
 
 namespace Carbon.Acme
 {
-    public class CertificateChainReader : IDisposable
+    public sealed class CertificateChainReader : IDisposable
     {
         private readonly StringReader reader;
-        private bool isEof = false;
+
+        private bool isEof;
 
         public CertificateChainReader(string text)
         {
             reader = new StringReader(text);
+            isEof = false;
         }
 
-        public bool TryReadNext(out byte[] der)
+        public bool TryReadNext(out byte[]? der)
         {
             if (isEof)
             {
@@ -27,25 +28,32 @@ namespace Carbon.Acme
 
             var sb = new StringBuilder();
 
-            string line;
+            string? line;
 
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
-                if (line == string.Empty)
+                if (line.Length == 0)
                 {
-                    der = Pem.Decode(sb.ToString());
+                    der = DecodePemData(sb.ToString());
 
                     return true;
                 }
                 else
                 {
-                    sb.AppendLine(line);
+                    sb.Append(line);
+                    sb.Append('\n');
                 }
             }
 
             isEof = true;
 
-            der = Pem.Decode(sb.ToString());
+            if (sb.Length == 0)
+            {
+                der = null;
+                return false;
+            }
+
+            der = DecodePemData(sb.ToString());
 
             return true;
         }
@@ -53,6 +61,20 @@ namespace Carbon.Acme
         public void Dispose()
         {
             reader.Dispose();
+        }
+
+        private static byte[] DecodePemData(ReadOnlySpan<char> pemData)
+        {
+            PemEncoding.TryFind(pemData, out PemFields fields);
+
+            byte[] decodedData = new byte[fields.DecodedDataLength];
+
+            if (!Convert.TryFromBase64Chars(pemData[fields.Base64Data], decodedData, out _))
+            {
+                throw new Exception("Error decoding pem data");
+            }
+
+            return decodedData;
         }
     }
 }

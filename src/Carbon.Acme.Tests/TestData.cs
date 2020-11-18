@@ -1,7 +1,25 @@
-﻿namespace Carbon.Acme.Tests
+﻿using System.Security.Cryptography;
+
+namespace Carbon.Acme.Tests
 {
     public static class TestData
     {
+
+        public static RSA ConstructRSAFromPem(string pem)
+        {
+            RSA rsa = RSA.Create();
+
+            rsa.ImportFromPem(pem);
+
+            return rsa;
+        }
+
+
+        public static RSA GetPrivateKey()
+        {
+            return ConstructRSAFromPem(PrivateRSA256KeyText);
+        }
+
         // 2048 bits (256 bits)
         public const string PrivateRSA256KeyText = 
 @"-----BEGIN RSA PRIVATE KEY-----
