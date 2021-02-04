@@ -11,23 +11,22 @@ namespace Carbon.Acme
     {
         // http-01 | dns-01 | tls-sni-02
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string Type { get; init; }
 
         /// <summary>
         /// The URL to which a response can be posted.
         /// </summary>
         [JsonPropertyName("url")]
-        public string Url { get; set; }
+        public string Url { get; init; }
 
         /// <summary>
         /// The status of this challenge. Possible values are: "pending", "valid", and "invalid".
         /// </summary>
         [JsonPropertyName("status")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ChallengeStatus Status { get; set; }
+        public ChallengeStatus Status { get; init; }
 
         [JsonPropertyName("token")]
-        public string Token { get; set; }
+        public string Token { get; init; }
 
         /// <summary>
         /// The time at which the server validated this challenge, 
@@ -35,15 +34,15 @@ namespace Carbon.Acme
         /// This field is REQUIRED if the "status" field is "valid".
         /// </summary>
         [JsonPropertyName("validated")]
-        public DateTime? Validated { get; set; }
+        public DateTime? Validated { get; init; }
 
 #nullable enable
 
         [JsonPropertyName("keyAuthorization")]
-        public string? KeyAuthorization { get; set; }
+        public string? KeyAuthorization { get; init; }
 
         [JsonPropertyName("error")]
-        public Problem? Error { get; set; }
+        public Problem? Error { get; init; }
     }
 }
 

@@ -6,6 +6,6 @@ namespace Carbon.Acme
 {
     public sealed class ChangeKeyRequest
     {
-        public JwsEncodedMessage Message { get; set; }
+        public JwsEncodedMessage Message { get; init; }
     }
 }

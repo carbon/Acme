@@ -11,22 +11,21 @@ namespace Carbon.Acme
         /// The identifier that the account is authorized to represent.
         /// </summary>
         [JsonPropertyName("identifier")]
-        public Identifier Identifier { get; set; }
+        public Identifier Identifier { get; init; }
 
         /// <summary>
         /// The status of this authorization. 
         /// Possible values are: “pending”, “valid”, “invalid”, “deactivated”, “expired”, and “revoked”.
         /// </summary>
         [JsonPropertyName("status")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public AuthorizationStatus Status { get; set; }
+        public AuthorizationStatus Status { get; init; }
 
         /// <summary>
         /// The timestamp after which the server will consider this authorization invalid.
         /// This field is REQUIRED for objects with "valid" in the "status" field.
         /// </summary>
         [JsonPropertyName("expires")]
-        public DateTime? Expires { get; set; }
+        public DateTime? Expires { get; init; }
 
         /// <summary>
         /// For pending authorizations, the challenges that the client
@@ -35,9 +34,9 @@ namespace Carbon.Acme
         /// the challenges that were used. 
         /// </summary>
         [JsonPropertyName("challenges")]
-        public Challenge[] Challenges { get; set; }
+        public Challenge[] Challenges { get; init; }
 
         [JsonPropertyName("wildcard")]
-        public bool? Wildcard { get; set; }
+        public bool? Wildcard { get; init; }
     }
 }

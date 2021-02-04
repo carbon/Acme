@@ -6,20 +6,19 @@ namespace Carbon.Acme
 {
     public sealed class Account
     {
-        [JsonPropertyName("status")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public AccountStatus Status { get; set; }
+        [JsonPropertyName("status")]        
+        public AccountStatus Status { get; init; }
 
         [JsonPropertyName("contact")]
-        public string[] Contact { get; set; }
+        public string[] Contact { get; init; }
 
         [JsonPropertyName("termsOfServiceAgreed")]
-        public bool TermsOfServiceAgreed { get; set; }
+        public bool TermsOfServiceAgreed { get; init; }
 
         [JsonPropertyName("orders")]
-        public string OrdersUrl { get; set; }
+        public string OrdersUrl { get; init; }
 
         [JsonIgnore]
-        public string Url { get; set; }
+        public string Url { get; init; }
     }
 }

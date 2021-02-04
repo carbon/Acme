@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace Carbon.Acme
 {
-    public class UpdateAccountRequest
+    public sealed class UpdateAccountRequest
     {
         [JsonPropertyName("contact")]
-        public string[] Contact { get; set; }
+        public string[] Contact { get; init; }
     }
 }

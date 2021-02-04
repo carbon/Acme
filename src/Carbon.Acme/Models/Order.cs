@@ -16,23 +16,22 @@ namespace Carbon.Acme
         /// pending, ready, processing, valid, invalid
         /// </summary>
         [JsonPropertyName("status")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public OrderStatus Status { get; set; }
+        public OrderStatus Status { get; init; }
 
         /// <summary>
         /// The timestamp after which the server will consider this order invalid
         /// </summary>
         [JsonPropertyName("expires")]
-        public DateTime? Expires { get; set; }
+        public DateTime? Expires { get; init; }
 
         [JsonPropertyName("identifiers")]
-        public Identifier[] Identifiers { get; set; }
+        public Identifier[] Identifiers { get; init; }
 
         [JsonPropertyName("notBefore")]
-        public DateTime? NotBefore { get; set; }
+        public DateTime? NotBefore { get; init; }
 
         [JsonPropertyName("notAfter")]
-        public DateTime? NotAfter { get; set; }
+        public DateTime? NotAfter { get; init; }
 
         /// <summary>
         /// For pending orders, the authorizations that the client needs to complete before 
@@ -41,14 +40,14 @@ namespace Carbon.Acme
         /// Each entry is a URL from which an authorization can be fetched with a GET request.
         /// </summary>
         [JsonPropertyName("authorizations")]
-        public string[] AuthorizationUrls { get; set; }
+        public string[] AuthorizationUrls { get; init; }
 
         /// <summary>
         /// A URL that a CSR must be POSTed to once all of the order’s authorizations are satisfied to finalize the order. 
         /// The result of a successful finalization will be the population of the certificate URL for the order.
         /// </summary>
         [JsonPropertyName("finalize")]
-        public string FinalizeUrl { get; set; }
+        public string FinalizeUrl { get; init; }
 
 #nullable enable
 
@@ -56,12 +55,12 @@ namespace Carbon.Acme
         /// A URL for the certificate that has been issued in response to this order.
         /// </summary>
         [JsonPropertyName("certificate")]
-        public string? CertificateUrl { get; set; }
+        public string? CertificateUrl { get; init; }
 
         /// <summary>
         /// The error that occurred while processing the order, if any. 
         /// </summary>
         [JsonPropertyName("problem")]
-        public Problem? Error { get; set; }
+        public Problem? Error { get; init; }
     }
 }

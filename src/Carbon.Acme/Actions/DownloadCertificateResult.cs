@@ -12,6 +12,6 @@
 
         public string Body { get; }
 
-        // public string Link { get; set; }
+        // public string Link { get; init; }
     }
 }

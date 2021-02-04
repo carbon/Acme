@@ -1,5 +1,8 @@
-﻿namespace Carbon.Acme
+﻿using System.Text.Json.Serialization;
+
+namespace Carbon.Acme
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum AuthorizationStatus
     {
         Pending     = 1,

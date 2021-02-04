@@ -10,25 +10,25 @@ namespace Carbon.Acme
     public sealed class Directory
     {
         [JsonPropertyName("newNonce")]
-        public string NewNonceUrl { get; set; }
+        public string NewNonceUrl { get; init; }
 
         [JsonPropertyName("newAccount")]
-        public string NewAccountUrl { get; set; }
+        public string NewAccountUrl { get; init; }
 
         [JsonPropertyName("newOrder")]
-        public string NewOrderUrl { get; set; }
+        public string NewOrderUrl { get; init; }
 
         [JsonPropertyName("newAuthz")]
-        public string NewAuthorizationUrl { get; set; }
+        public string NewAuthorizationUrl { get; init; }
 
         [JsonPropertyName("revokeCert")]
-        public string RevokeCertificateUrl { get; set; }
+        public string RevokeCertificateUrl { get; init; }
 
         [JsonPropertyName("keyChange")]
-        public string KeyChangeUrl { get; set; }
+        public string KeyChangeUrl { get; init; }
 
         [JsonPropertyName("meta")]
-        public DirectoryMetadata Meta { get; set; }
+        public DirectoryMetadata Meta { get; init; }
         
         public static async ValueTask<Directory> GetAsync(string url = "https://acme-v02.api.letsencrypt.org/directory")
         {

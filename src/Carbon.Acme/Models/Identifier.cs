@@ -16,12 +16,10 @@ namespace Carbon.Acme
         }
 
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string Type { get; init; }
 
         [JsonPropertyName("value")]
-        public string Value { get; set; }
-
-        #region IEquatable
+        public string Value { get; init; }
 
         public bool Equals(Identifier? other)
         {
@@ -31,6 +29,14 @@ namespace Carbon.Acme
                 && string.Equals(Value, other.Value, StringComparison.Ordinal);
         }
 
-        #endregion
+        public override bool Equals(object? obj)
+        {
+            return obj is Identifier other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Type, Value);
+        }
     }
 }
