@@ -32,7 +32,7 @@ namespace Carbon.Acme
         
         public static async ValueTask<Directory> GetAsync(string url = "https://acme-v02.api.letsencrypt.org/directory")
         {
-            using HttpClient http = new HttpClient();
+            using HttpClient http = new ();
 
             var responseStream = await http.GetStreamAsync(url).ConfigureAwait(false);
 
