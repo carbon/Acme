@@ -10,7 +10,7 @@ namespace Carbon.Acme
     public sealed class Order
     {
         [JsonIgnore]
-        public string Url { get; set; }
+        public string Url { get; set; } // keep setter
 
         /// <summary>
         /// pending, ready, processing, valid, invalid
