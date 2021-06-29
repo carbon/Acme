@@ -413,10 +413,7 @@ namespace Carbon.Acme
 
                 string json = "{\"e\":\"" + _jwk.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + _jwk.Modulus + "\"}";
 
-                // .NET 5.0 TODO: Use one shot hash
-                using SHA256 sha256 = SHA256.Create();
-
-                byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
+                byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(json));
 
                 _thumbprint = Base64Url.Encode(hash);
             }
@@ -441,11 +438,7 @@ namespace Carbon.Acme
 
             string result = GetKeyAuthorization(token);
 
-            // .NET 5.0 TODO: Use one shot hash
-
-            using SHA256 sha256 = SHA256.Create();
-
-            byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(result));
+            byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(result));
 
             return Base64Url.Encode(hash);
         }
@@ -456,7 +449,7 @@ namespace Carbon.Acme
 
         // A nonce is included with every request to prevent replay.
 
-        public async Task<Nonce> GetNonceAsync()
+        public async ValueTask<Nonce> GetNonceAsync()
         {
             if (_directory is null)
             {
@@ -498,7 +491,7 @@ namespace Carbon.Acme
 
             if (_accountUrl is null)
             {
-                this._accountUrl = await GetAccountUrlAsync().ConfigureAwait(false);
+                _accountUrl = await GetAccountUrlAsync().ConfigureAwait(false);
             }
         }
 
@@ -510,7 +503,7 @@ namespace Carbon.Acme
             {
                 var directoryStream = await httpClient.GetStreamAsync(_directoryUrl).ConfigureAwait(false);
 
-                this._directory = await JsonSerializer.DeserializeAsync<Directory>(directoryStream).ConfigureAwait(false);
+                _directory = await JsonSerializer.DeserializeAsync<Directory>(directoryStream).ConfigureAwait(false);
             }
         }
 
@@ -599,6 +592,7 @@ namespace Carbon.Acme
         }
 
         private async Task<JwsEncodedMessage> GetSignedMessageAsync<T>(string url, T payload)
+            where T: notnull
         {
             Nonce nonce = await GetNonceAsync().ConfigureAwait(false);
 
