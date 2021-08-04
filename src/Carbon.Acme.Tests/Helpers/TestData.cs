@@ -4,7 +4,6 @@ namespace Carbon.Acme.Tests
 {
     public static class TestData
     {
-
         public static RSA ConstructRSAFromPem(string pem)
         {
             RSA rsa = RSA.Create();
@@ -13,7 +12,6 @@ namespace Carbon.Acme.Tests
 
             return rsa;
         }
-
 
         public static RSA GetPrivateKey()
         {

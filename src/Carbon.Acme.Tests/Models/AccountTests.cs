@@ -7,7 +7,7 @@ namespace Carbon.Acme.Tests
     public class AccountTests
     {
         [Fact]
-        public void A()
+        public void Deserialize()
         {
             Account model = JsonSerializer.Deserialize<Account>(@"{
   ""status"": ""valid"",

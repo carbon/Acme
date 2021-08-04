@@ -7,7 +7,7 @@ namespace Carbon.Acme.Tests
     public class OrderListTests
     {
         [Fact]
-        public void A()
+        public void Deserialize()
         {
             var text = @"{
   ""orders"": [
@@ -20,7 +20,6 @@ namespace Carbon.Acme.Tests
 
             Assert.Equal("https://example.com/acme/acct/1/order/1", list.Urls[0]);
             Assert.Equal("https://example.com/acme/acct/1/order/2", list.Urls[1]);
-
         }
     }
 }
