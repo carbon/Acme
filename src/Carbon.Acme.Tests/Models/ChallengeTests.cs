@@ -1,10 +1,7 @@
 ﻿using System.Text.Json;
 
-using Xunit;
-
 namespace Carbon.Acme.Tests
 {
-
     public class ChallengeTests
     {
         [Fact]

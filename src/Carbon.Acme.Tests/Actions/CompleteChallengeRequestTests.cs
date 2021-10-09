@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace Carbon.Acme.Tests
+﻿namespace Carbon.Acme.Tests
 {
     public class CompleteChallengeRequestTests
     {

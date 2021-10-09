@@ -1,6 +1,4 @@
-﻿
-using System.Text.Json;
-using Xunit;
+﻿using System.Text.Json;
 
 namespace Carbon.Acme.Tests
 {

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
-
-using Carbon.Extensions;
-using Carbon.Jose;
-
-using Xunit;
+﻿using Carbon.Jose;
 
 namespace Carbon.Acme.Tests
 {

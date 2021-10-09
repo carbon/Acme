@@ -2,8 +2,6 @@
 
 using Carbon.Acme.Exceptions;
 
-using Xunit;
-
 namespace Carbon.Acme.Tests
 {
     public class ProblemTests

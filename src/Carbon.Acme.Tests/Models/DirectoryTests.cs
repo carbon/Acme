@@ -1,6 +1,4 @@
-
 using System.Text.Json;
-using Xunit;
 
 namespace Carbon.Acme.Tests
 {
@@ -30,7 +28,6 @@ namespace Carbon.Acme.Tests
             Assert.Equal("https://example.com/acme/new-authz",   model.NewAuthorizationUrl);
             Assert.Equal("https://example.com/acme/revoke-cert", model.RevokeCertificateUrl);
             Assert.Equal("https://example.com/acme/key-change",  model.KeyChangeUrl);
-
 
             var meta = model.Meta;
 

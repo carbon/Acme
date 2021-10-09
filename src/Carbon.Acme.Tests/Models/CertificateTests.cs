@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Xunit;
+﻿using System.Security.Cryptography.X509Certificates;
 
 namespace Carbon.Acme.Tests
 {
