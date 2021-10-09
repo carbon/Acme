@@ -41,9 +41,6 @@ public class AcmeClient
         if (privateKey is null)
             throw new ArgumentNullException(nameof(privateKey));
 
-        if (accountUrl is null)
-            throw new ArgumentNullException(nameof(accountUrl));
-
         if (directoryUrl is null)
             throw new ArgumentNullException(nameof(directoryUrl));
 
