@@ -22,7 +22,7 @@ namespace Carbon.Acme.Tests
 
             var jwk = new Jwk { KeyId = "kid" };
 
-            header.Add("jwk", JsonHelper.ToJsonElement(jwk));
+            header.Add("jwk", jwk);
 
             return header;
         }
