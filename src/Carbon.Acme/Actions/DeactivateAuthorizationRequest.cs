@@ -3,19 +3,18 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+public sealed class DeactivateAuthorizationRequest
 {
-    public sealed class DeactivateAuthorizationRequest
+    public DeactivateAuthorizationRequest(string url)
     {
-        public DeactivateAuthorizationRequest(string url)
-        {
-            Url = url ?? throw new ArgumentNullException(nameof(url));
-        }
-
-        [JsonIgnore]
-        public string Url { get; }
-
-        [JsonPropertyName("status")]
-        public string Status => "deactivated";
+        Url = url ?? throw new ArgumentNullException(nameof(url));
     }
+
+    [JsonIgnore]
+    public string Url { get; }
+
+    [JsonPropertyName("status")]
+    public string Status => "deactivated";
 }

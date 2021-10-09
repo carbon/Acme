@@ -1,28 +1,27 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+public class CreateAccountRequest
 {
-    public class CreateAccountRequest
+    public CreateAccountRequest(
+        bool termsOfServiceAgreed,
+        string[]? contact,
+        bool? onlyReturnExisting = null)
     {
-        public CreateAccountRequest(
-            bool termsOfServiceAgreed,
-            string[]? contact,
-            bool? onlyReturnExisting = null)
-        {
-            TermsOfServiceAgreed = termsOfServiceAgreed;
-            Contact = contact;
-            OnlyReturnExisting = onlyReturnExisting;
-        }
-
-        [JsonPropertyName("termsOfServiceAgreed")]
-        public bool TermsOfServiceAgreed { get; }
-
-        [JsonPropertyName("contact")]
-        public string[]? Contact { get; }
-
-        [JsonPropertyName("onlyReturnExisting")]
-        public bool? OnlyReturnExisting { get; }
+        TermsOfServiceAgreed = termsOfServiceAgreed;
+        Contact = contact;
+        OnlyReturnExisting = onlyReturnExisting;
     }
+
+    [JsonPropertyName("termsOfServiceAgreed")]
+    public bool TermsOfServiceAgreed { get; }
+
+    [JsonPropertyName("contact")]
+    public string[]? Contact { get; }
+
+    [JsonPropertyName("onlyReturnExisting")]
+    public bool? OnlyReturnExisting { get; }
 }
 
 

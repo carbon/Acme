@@ -2,11 +2,10 @@
 
 using System.Text.Json.Serialization;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+public sealed class UpdateAccountRequest
 {
-    public sealed class UpdateAccountRequest
-    {
-        [JsonPropertyName("contact")]
-        public string[] Contact { get; init; }
-    }
+    [JsonPropertyName("contact")]
+    public string[] Contact { get; init; }
 }

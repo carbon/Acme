@@ -1,16 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ChallengeStatus
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum ChallengeStatus
-    {
-        Unknown    = 0,
-        Pending    = 1,
-        Processing = 2,
-        Valid      = 3,
-        Invalid    = 4
-    }
+    Unknown    = 0,
+    Pending    = 1,
+    Processing = 2,
+    Valid      = 3,
+    Invalid    = 4
 }
 
 /*

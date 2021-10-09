@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+public readonly struct Nonce
 {
-    public readonly struct Nonce
+    public Nonce(string value, DateTime created)
     {
-        public Nonce(string value, DateTime created)
-        {
-            Value = value ?? throw new ArgumentNullException(nameof(value));
-            Created = created;
-        }
-
-        public string Value { get; }
-
-        public DateTime Created { get; }
-
-        public TimeSpan Age => DateTime.UtcNow - Created;
+        Value = value ?? throw new ArgumentNullException(nameof(value));
+        Created = created;
     }
+
+    public string Value { get; }
+
+    public DateTime Created { get; }
+
+    public TimeSpan Age => DateTime.UtcNow - Created;
 }

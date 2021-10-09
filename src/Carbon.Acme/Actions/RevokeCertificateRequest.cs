@@ -3,32 +3,31 @@ using System.Text.Json.Serialization;
 
 using Carbon.Extensions;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+public sealed class RevokeCertificateRequest
 {
-    public sealed class RevokeCertificateRequest
+    public RevokeCertificateRequest(byte[] certificate, int? reason = null)
     {
-        public RevokeCertificateRequest(byte[] certificate, int? reason = null)
-        {
-            Certificate = Base64Url.Encode(certificate);
-            Reason = reason;
-        }
-
-        public RevokeCertificateRequest(string certificate, int? reason = null)
-        {
-            Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
-            Reason      = reason;
-        }
-
-        /// <summary>
-        /// The certificate to be revoked, in the base64url-encoded version of the DER format. 
-        /// Note: Because this field uses base64url, and does not include headers, it is different from PEM.
-        /// </summary>
-        [JsonPropertyName("certificate")]
-        public string Certificate { get; }
-
-        [JsonPropertyName("reason")]
-        public int? Reason { get; }
+        Certificate = Base64Url.Encode(certificate);
+        Reason = reason;
     }
+
+    public RevokeCertificateRequest(string certificate, int? reason = null)
+    {
+        Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
+        Reason = reason;
+    }
+
+    /// <summary>
+    /// The certificate to be revoked, in the base64url-encoded version of the DER format. 
+    /// Note: Because this field uses base64url, and does not include headers, it is different from PEM.
+    /// </summary>
+    [JsonPropertyName("certificate")]
+    public string Certificate { get; }
+
+    [JsonPropertyName("reason")]
+    public int? Reason { get; }
 }
 
 // https://tools.ietf.org/html/draft-ietf-acme-acme-10#section-7.6
