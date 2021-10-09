@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -16,10 +15,10 @@ using Carbon.Jose;
 
 namespace Carbon.Acme;
 
-// ---------------------------------------------------------------
+// --------------------------------------------------------
 // Automatic Certificate Management Environment (ACME)
 // RFC 8555 | https://tools.ietf.org/html/rfc8555
-// ---------------------------------------------------------------
+// --------------------------------------------------------
 
 public class AcmeClient
 {
@@ -39,9 +38,18 @@ public class AcmeClient
 
     public AcmeClient(RSA privateKey, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
     {
+        if (privateKey is null)
+            throw new ArgumentNullException(nameof(privateKey));
+
+        if (accountUrl is null)
+            throw new ArgumentNullException(nameof(accountUrl));
+
+        if (directoryUrl is null)
+            throw new ArgumentNullException(nameof(directoryUrl));
+
         _accountUrl = accountUrl;
-        _directoryUrl = directoryUrl ?? throw new ArgumentNullException(nameof(directoryUrl));
-        _privateKey = privateKey ?? throw new ArgumentNullException(nameof(privateKey));
+        _directoryUrl = directoryUrl;
+        _privateKey = privateKey;
     }
 
     #region Accounts
@@ -300,7 +308,8 @@ public class AcmeClient
     //  POST /acme/order/{id}/finalize
     public async Task<Order> FinalizeOrderAsync(FinalizeOrderRequest request)
     {
-        if (request is null) throw new ArgumentNullException(nameof(request));
+        if (request is null) 
+            throw new ArgumentNullException(nameof(request));
 
         if (!IsInitialized)
         {
@@ -322,9 +331,7 @@ public class AcmeClient
     public async Task<Order> WaitForCertificateAsync(string orderUrl, TimeSpan timeout)
     {
         if (orderUrl is null)
-        {
             throw new ArgumentNullException(nameof(orderUrl));
-        }
 
         if (timeout > TimeSpan.FromMinutes(5))
         {
@@ -361,7 +368,8 @@ public class AcmeClient
 
     public async Task<DownloadCertificateResult> DownloadCertificateChainAsync(string url)
     {
-        if (url is null) throw new ArgumentNullException(nameof(url));
+        if (url is null) 
+            throw new ArgumentNullException(nameof(url));
 
         if (!IsInitialized)
         {
@@ -411,7 +419,10 @@ public class AcmeClient
         {
             _jwk ??= Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(false));
 
-            string json = "{\"e\":\"" + _jwk.Exponent + "\",\"kty\":\"RSA\",\"n\":\"" + _jwk.Modulus + "\"}";
+            string e = Base64Url.Encode(_jwk.Exponent);
+            string n = Base64Url.Encode(_jwk.Modulus);
+
+            string json = "{\"e\":\"" + e + "\",\"kty\":\"RSA\",\"n\":\"" + n + "\"}";
 
             byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(json));
 
@@ -596,7 +607,7 @@ public class AcmeClient
     {
         Nonce nonce = await GetNonceAsync().ConfigureAwait(false);
 
-        Dictionary<string, object> header = GetMessageHeader(url, nonce);
+        AcmeMessageHeader header = GetMessageHeader(url, nonce);
 
         return Jws.Sign(
             integrityProtectedHeader : header,
@@ -609,7 +620,7 @@ public class AcmeClient
     {
         Nonce nonce = await GetNonceAsync().ConfigureAwait(false);
 
-        Dictionary<string, object> header = GetMessageHeader(url, nonce);
+        AcmeMessageHeader header = GetMessageHeader(url, nonce);
 
         return Jws.Sign(
             base64EncodedIntegrityProtectedHeader : GetBase64UrlEncodedJson(header),
@@ -618,21 +629,17 @@ public class AcmeClient
         );
     }
 
-    private Dictionary<string, object> GetMessageHeader(string url, Nonce nonce)
+    private AcmeMessageHeader GetMessageHeader(string url, Nonce nonce)
     {
-        var header = new Dictionary<string, object>(5) {
-            { "alg",   AlgorithmNames.RS256 },
-            { "nonce", nonce.Value },
-            { "url",   url }
-        };
+        var header = new AcmeMessageHeader(nonce, url);
 
         if (_accountUrl is not null)
         {
-            header.Add("kid", _accountUrl);
+            header.Kid = _accountUrl;
         }
         else
         {
-            header.Add("jwk", Jwk);
+            header.Jwk = Jwk;
         }
 
         return header;
