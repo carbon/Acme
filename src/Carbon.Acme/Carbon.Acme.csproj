@@ -3,7 +3,8 @@
   <PropertyGroup>
     <AssemblyName>Carbon.Acme</AssemblyName>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>0.38.1</Version>
+    <LangVersion>10</LangVersion>
+    <Version>0.39.0</Version>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     
@@ -19,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Carbon.Jose" Version="0.59.0" />
+    <PackageReference Include="Carbon.Jose" Version="0.62.0" />
   </ItemGroup>
 
 </Project>
