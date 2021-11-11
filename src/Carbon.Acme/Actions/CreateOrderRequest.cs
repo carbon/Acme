@@ -20,7 +20,9 @@ public class CreateOrderRequest
         DateTime? notBefore = null,
         DateTime? notAfter = null)
     {
-        Identifiers = identifiers ?? throw new ArgumentNullException(nameof(identifiers));
+        ArgumentNullException.ThrowIfNull(identifiers);
+
+        Identifiers = identifiers;
         NotBefore = notBefore;
         NotAfter = notAfter;
     }

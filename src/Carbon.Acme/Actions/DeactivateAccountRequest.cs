@@ -9,7 +9,9 @@ public sealed class DeactivateAccountRequest
 {
     public DeactivateAccountRequest(string url)
     {
-        Url = url ?? throw new ArgumentNullException(nameof(url));
+        ArgumentNullException.ThrowIfNull(url);
+
+        Url = url;
     }
 
     [JsonIgnore]

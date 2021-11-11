@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Carbon.Acme.Exceptions;
@@ -38,11 +39,8 @@ public class AcmeClient
 
     public AcmeClient(RSA privateKey, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
     {
-        if (privateKey is null)
-            throw new ArgumentNullException(nameof(privateKey));
-
-        if (directoryUrl is null)
-            throw new ArgumentNullException(nameof(directoryUrl));
+        ArgumentNullException.ThrowIfNull(privateKey);
+        ArgumentNullException.ThrowIfNull(directoryUrl);
 
         _accountUrl = accountUrl;
         _directoryUrl = directoryUrl;
@@ -72,7 +70,7 @@ public class AcmeClient
     // 7.3. Account Creation | https://tools.ietf.org/html/draft-ietf-acme-acme-10#section-7.3
     public async Task<string> CreateAccountAsync(CreateAccountRequest request)
     {
-        if (request is null) throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         await InitializeDirectoryAsync().ConfigureAwait(false);
 
@@ -83,7 +81,7 @@ public class AcmeClient
 
         (_, string? location, _) = await PostAsync(_directory.NewAccountUrl, message).ConfigureAwait(false);
 
-        this._accountUrl = location;
+        _accountUrl = location;
 
         // -> 201 (OK) [Account]
 
@@ -147,7 +145,7 @@ public class AcmeClient
 
     public async Task<Authorization> GetAuthorizationAsync(string url)
     {
-        if (url is null) throw new ArgumentNullException(nameof(url));
+        ArgumentNullException.ThrowIfNull(url);
 
         return (await GetAuthorizationAsyncInternal(url).ConfigureAwait(false)).authorization;
     }
@@ -179,10 +177,7 @@ public class AcmeClient
 
     public async Task<Authorization> WaitForAuthorizationAsync(string url, TimeSpan timeout)
     {
-        if (url is null)
-        {
-            throw new ArgumentNullException(nameof(url));
-        }
+        ArgumentNullException.ThrowIfNull(url);
 
         if (timeout > TimeSpan.FromMinutes(5))
         {
@@ -230,7 +225,7 @@ public class AcmeClient
 
     public async Task<Challenge> GetChallengeAsync(string url)
     {
-        if (url is null) throw new ArgumentNullException(nameof(url));
+        ArgumentNullException.ThrowIfNull(url);
 
         return await PostAsGetAsync<Challenge>(url).ConfigureAwait(false);
     }
@@ -262,14 +257,14 @@ public class AcmeClient
 
     public async Task<Order> GetOrderAsync(string url)
     {
-        if (url is null) throw new ArgumentNullException(nameof(url));
+        ArgumentNullException.ThrowIfNull(url);
 
         return await PostAsGetAsync<Order>(url).ConfigureAwait(false);
     }
 
     public async Task<OrderList> ListOrdersAsync(string url)
     {
-        if (url is null) throw new ArgumentNullException(nameof(url));
+        ArgumentNullException.ThrowIfNull(url);
 
         // Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
 
@@ -279,7 +274,7 @@ public class AcmeClient
     // POST /acme/new-order
     public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
     {
-        if (request is null) throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         if (!IsInitialized)
         {
@@ -305,8 +300,7 @@ public class AcmeClient
     //  POST /acme/order/{id}/finalize
     public async Task<Order> FinalizeOrderAsync(FinalizeOrderRequest request)
     {
-        if (request is null) 
-            throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         if (!IsInitialized)
         {
@@ -327,8 +321,7 @@ public class AcmeClient
 
     public async Task<Order> WaitForCertificateAsync(string orderUrl, TimeSpan timeout)
     {
-        if (orderUrl is null)
-            throw new ArgumentNullException(nameof(orderUrl));
+        ArgumentNullException.ThrowIfNull(orderUrl);
 
         if (timeout > TimeSpan.FromMinutes(5))
         {
@@ -365,8 +358,7 @@ public class AcmeClient
 
     public async Task<DownloadCertificateResult> DownloadCertificateChainAsync(string url)
     {
-        if (url is null) 
-            throw new ArgumentNullException(nameof(url));
+        ArgumentNullException.ThrowIfNull(url);
 
         if (!IsInitialized)
         {
@@ -389,7 +381,7 @@ public class AcmeClient
     // 7.6 https://tools.ietf.org/html/draft-ietf-acme-acme-09#section-7.6
     public async Task RevokeCertificateAsync(RevokeCertificateRequest request)
     {
-        if (request is null) throw new ArgumentNullException(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         if (!IsInitialized)
         {
@@ -431,7 +423,7 @@ public class AcmeClient
 
     public string GetKeyAuthorization(string token)
     {
-        if (token is null) throw new ArgumentNullException(nameof(token));
+        ArgumentNullException.ThrowIfNull(token);
 
         return token + "." + GetSha256Thumbprint();
     }
@@ -440,7 +432,7 @@ public class AcmeClient
     // Should still be quoted
     public string GetBase64UrlEncodedKeyAuthorizationSha256Digest(string token)
     {
-        if (token is null) throw new ArgumentNullException(nameof(token));
+        ArgumentNullException.ThrowIfNull(token);
 
         // TXT _acme-challenge.{host} "{value}"
 
@@ -642,7 +634,7 @@ public class AcmeClient
         return header;
     }
 
-    private static readonly JsonSerializerOptions jso = new () { IgnoreNullValues = true };
+    private static readonly JsonSerializerOptions jso = new () { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
 
     private static string GetBase64UrlEncodedJson<T>(T instance)
     {
