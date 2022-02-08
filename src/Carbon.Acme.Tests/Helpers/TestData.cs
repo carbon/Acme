@@ -1,25 +1,25 @@
 ﻿using System.Security.Cryptography;
 
-namespace Carbon.Acme.Tests
+namespace Carbon.Acme.Tests;
+
+public static class TestData
 {
-    public static class TestData
+    public static RSA ConstructRSAFromPem(string pem)
     {
-        public static RSA ConstructRSAFromPem(string pem)
-        {
-            RSA rsa = RSA.Create();
+        RSA rsa = RSA.Create();
 
-            rsa.ImportFromPem(pem);
+        rsa.ImportFromPem(pem);
 
-            return rsa;
-        }
+        return rsa;
+    }
 
-        public static RSA GetPrivateKey()
-        {
-            return ConstructRSAFromPem(PrivateRSA256KeyText);
-        }
+    public static RSA GetPrivateKey()
+    {
+        return ConstructRSAFromPem(PrivateRSA256KeyText);
+    }
 
-        // 2048 bits (256 bits)
-        public const string PrivateRSA256KeyText = 
+    // 2048 bits (256 bits)
+    public const string PrivateRSA256KeyText =
 @"-----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEA5ZNtvz8Zu8z3HMxe0cpb0m4e0PJe7Uw3P7ss1rYdnifXBkuL
 ZPqy1EOKWpROKH7cbUw7QTzC16q99ZCRW/gsWLZUV+SWOdq5moQnGiRclkN1S69i
@@ -48,10 +48,10 @@ FQI14s8c03U8tJ0yzJ+iIU+fFRzB1GgBWLasLNmoGoWPiqL7MnVlnpaqnosCZGBq
 nBIAt6vwU9/glhk/GLS4AcEFgH+XP6DcsqhNX6srRgl6KuvC6Ic=
 -----END RSA PRIVATE KEY-----";
 
-        // actual
-        // root
+    // actual
+    // root
 
-        public const string CertificateChain =
+    public const string CertificateChain =
 @"-----BEGIN CERTIFICATE-----
 MIIF6DCCBNCgAwIBAgITAPo/YUx8DKg7Oa5/yqAfLmlABDANBgkqhkiG9w0BAQsF
 ADAiMSAwHgYDVQQDDBdGYWtlIExFIEludGVybWVkaWF0ZSBYMTAeFw0xODAxMDUw
@@ -115,5 +115,4 @@ WzYlTWeUVsO40xJqhgUQRER9YLOLxJ0O6C8i0xFxAMKOtSdodMB3RIwt7RFQ0uyt
 n5Z5MqkYhlMI3J1tPRTp1nEt9fyGspBOO05gi148Qasp+3N+svqKomoQglNoAxU=
 -----END CERTIFICATE-----
 ";
-    }
 }

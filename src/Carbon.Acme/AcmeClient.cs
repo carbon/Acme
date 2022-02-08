@@ -230,7 +230,7 @@ public class AcmeClient
         return await PostAsGetAsync<Challenge>(url).ConfigureAwait(false);
     }
 
-    // 7.5.1.  Responding to Challenges
+    // 7.5.1. Responding to Challenges
     // https://tools.ietf.org/html/draft-ietf-acme-acme-10#section-7.5.1
     public async Task<Challenge> CompleteChallengeAsync(CompleteChallengeRequest request)
     {
@@ -338,7 +338,7 @@ public class AcmeClient
 
         // Once the certificate is issued, the order enters the "valid" state.
 
-        while (result.Status != OrderStatus.Valid && retryCount < 5)
+        while (!result.IsValid && retryCount < 5)
         {
             await Task.Delay(retryAfter).ConfigureAwait(false);
 

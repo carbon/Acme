@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme.Tests
 {
@@ -21,7 +22,7 @@ namespace Carbon.Acme.Tests
   ]
 }", JsonSerializer.Serialize(request, new JsonSerializerOptions {
                 WriteIndented = true, 
-                IgnoreNullValues = true 
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             } ));
 
 

@@ -62,4 +62,7 @@ public sealed class Order
     /// </summary>
     [JsonPropertyName("problem")]
     public Problem? Error { get; init; }
+
+    [JsonIgnore]
+    public bool IsValid => Status is OrderStatus.Valid;
 }
