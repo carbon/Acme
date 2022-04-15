@@ -9,10 +9,10 @@ public sealed class Identifier : IEquatable<Identifier>
     public Identifier() { }
 #nullable enable
 
-    public Identifier(string type, string value)
+    public Identifier(string type!!, string value!!)
     {
-        Type = type ?? throw new ArgumentNullException(nameof(type));
-        Value = value ?? throw new ArgumentNullException(nameof(value));
+        Type = type;
+        Value = value;
     }
 
     [JsonPropertyName("type")]

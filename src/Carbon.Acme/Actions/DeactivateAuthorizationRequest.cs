@@ -1,15 +1,14 @@
 ﻿#pragma warning disable CA1822 // Mark members as static
 
-using System;
 using System.Text.Json.Serialization;
 
 namespace Carbon.Acme;
 
 public sealed class DeactivateAuthorizationRequest
 {
-    public DeactivateAuthorizationRequest(string url)
+    public DeactivateAuthorizationRequest(string url!!)
     {
-        Url = url ?? throw new ArgumentNullException(nameof(url));
+        Url = url;
     }
 
     [JsonIgnore]

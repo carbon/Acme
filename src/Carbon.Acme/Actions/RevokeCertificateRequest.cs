@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 using Carbon.Extensions;
 
@@ -7,15 +6,15 @@ namespace Carbon.Acme;
 
 public sealed class RevokeCertificateRequest
 {
-    public RevokeCertificateRequest(byte[] certificate, int? reason = null)
+    public RevokeCertificateRequest(byte[] certificate!!, int? reason = null)
     {
         Certificate = Base64Url.Encode(certificate);
         Reason = reason;
     }
 
-    public RevokeCertificateRequest(string certificate, int? reason = null)
+    public RevokeCertificateRequest(string certificate!!, int? reason = null)
     {
-        Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
+        Certificate = certificate;
         Reason = reason;
     }
 

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Carbon.Acme;
 
 public sealed class CompleteChallengeRequest
 {
-    public CompleteChallengeRequest(string url)
+    public CompleteChallengeRequest(string url!!)
     {
-        ArgumentNullException.ThrowIfNull(url);
-
         Url = url;
     }
 

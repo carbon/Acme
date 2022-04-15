@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Carbon.Acme;
 
-public class CreateOrderRequest
+public sealed class CreateOrderRequest
 {
     public CreateOrderRequest(
       string domainName,
@@ -16,12 +16,10 @@ public class CreateOrderRequest
     }
 
     public CreateOrderRequest(
-        Identifier[] identifiers,
+        Identifier[] identifiers!!,
         DateTime? notBefore = null,
         DateTime? notAfter = null)
     {
-        ArgumentNullException.ThrowIfNull(identifiers);
-
         Identifiers = identifiers;
         NotBefore = notBefore;
         NotAfter = notAfter;

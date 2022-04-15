@@ -4,9 +4,9 @@ namespace Carbon.Acme;
 
 public readonly struct Nonce
 {
-    public Nonce(string value, DateTime created)
+    public Nonce(string value!!, DateTime created)
     {
-        Value = value ?? throw new ArgumentNullException(nameof(value));
+        Value = value;
         Created = created;
     }
 

@@ -37,9 +37,8 @@ public class AcmeClient
 
     private readonly ConcurrentQueue<Nonce> nonces = new ();
 
-    public AcmeClient(RSA privateKey, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
+    public AcmeClient(RSA privateKey!!, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
     {
-        ArgumentNullException.ThrowIfNull(privateKey);
         ArgumentNullException.ThrowIfNull(directoryUrl);
 
         _accountUrl = accountUrl;
@@ -421,10 +420,8 @@ public class AcmeClient
         return _thumbprint;
     }
 
-    public string GetKeyAuthorization(string token)
+    public string GetKeyAuthorization(string token!!)
     {
-        ArgumentNullException.ThrowIfNull(token);
-
         return token + "." + GetSha256Thumbprint();
     }
 
@@ -432,8 +429,6 @@ public class AcmeClient
     // Should still be quoted
     public string GetBase64UrlEncodedKeyAuthorizationSha256Digest(string token)
     {
-        ArgumentNullException.ThrowIfNull(token);
-
         // TXT _acme-challenge.{host} "{value}"
 
         string result = GetKeyAuthorization(token);
