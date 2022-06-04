@@ -158,8 +158,8 @@ public class AcmeClient
         // Let's Encrypt does not support Retry-After
 
         /*
-        if (response.Headers.TryGetValues("Retry-After", out var retryAfterHeader)
-            && int.TryParse(retryAfterHeader.First(), out int retryAfterSeconds))
+        if (response.Headers.NonValidated.TryGetValues("Retry-After", out var retryAfterHeader)
+            && int.TryParse(retryAfterHeader.ToString(), out int retryAfterSeconds))
         {
             retryAfter = TimeSpan.FromSeconds(retryAfterSeconds);
 
@@ -412,7 +412,7 @@ public class AcmeClient
 
             string json = "{\"e\":\"" + e + "\",\"kty\":\"RSA\",\"n\":\"" + n + "\"}";
 
-            byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(json));
+            byte[] hash = SHA256.HashData(Encoding.ASCII.GetBytes(json));
 
             _thumbprint = Base64Url.Encode(hash);
         }
@@ -467,7 +467,7 @@ public class AcmeClient
 
         using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, _directory!.NewNonceUrl)).ConfigureAwait(false);
 
-        string replayNonce = response.Headers.GetValues("Replay-Nonce").First();
+        string replayNonce = response.Headers.NonValidated["Replay-Nonce"].ToString();
 
         return new Nonce(replayNonce, DateTime.UtcNow);
     }
@@ -521,9 +521,7 @@ public class AcmeClient
         return JsonSerializer.Deserialize<T>(responseText)!;
     }
 
-    private async Task<(HttpStatusCode statusCode, string? location, string responseText)> PostAsync(
-        string url,
-        JwsEncodedMessage message)
+    private async Task<(HttpStatusCode statusCode, string? location, string responseText)> PostAsync(string url, JwsEncodedMessage message)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, url) {
             Content = new StringContent(
@@ -545,7 +543,7 @@ public class AcmeClient
 
         // capture the replay nonce for the next request
         if (request.Method == HttpMethod.Post &&
-            response.Headers.TryGetValues("Replay-Nonce", out var replayNonce))
+            response.Headers.NonValidated.TryGetValues("Replay-Nonce", out var replayNonce))
         {
             // ensure the queue does not exceed 3 entries
             if (nonces.Count > 3)
@@ -553,7 +551,7 @@ public class AcmeClient
                 nonces.TryDequeue(out _); // remove the oldest nonce when the queue exceeds three entries
             }
 
-            nonces.Enqueue(new Nonce(string.Join(",", replayNonce), DateTime.UtcNow));
+            nonces.Enqueue(new Nonce(replayNonce.ToString(), DateTime.UtcNow));
         }
 
         // Content-Type is null when only a Location is returned
