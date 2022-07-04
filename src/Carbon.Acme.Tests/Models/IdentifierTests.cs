@@ -1,18 +1,17 @@
 ﻿using System.Text.Json;
 
-namespace Carbon.Acme.Tests
+namespace Carbon.Acme.Tests;
+
+public class IdentifierTests
 {
-    public class IdentifierTests
+    [Fact]
+    public void CanConstruct()
     {
-        [Fact]
-        public void Construct()
-        {
-            var identifier = new Identifier("dns", "abc.com");
+        var identifier = new Identifier("dns", "abc.com");
 
-            Assert.Equal("dns", identifier.Type);
-            Assert.Equal("abc.com", identifier.Value);
+        Assert.Equal("dns", identifier.Type);
+        Assert.Equal("abc.com", identifier.Value);
 
-            Assert.Equal("dns", JsonSerializer.Deserialize <Identifier>(JsonSerializer.Serialize(identifier)).Type);
-        }
+        Assert.Equal("dns", JsonSerializer.Deserialize <Identifier>(JsonSerializer.Serialize(identifier)).Type);
     }
 }

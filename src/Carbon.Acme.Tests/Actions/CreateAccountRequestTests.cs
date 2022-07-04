@@ -1,14 +1,13 @@
-﻿namespace Carbon.Acme.Tests
-{
-    public class CreateAccountRequestTests
-    {
-        [Fact]
-        public void Construct()
-        {
-            var action = new CreateAccountRequest(true, new[] { "mailto:test@test.com" }, false);
+﻿namespace Carbon.Acme.Tests;
 
-            Assert.True(action.TermsOfServiceAgreed);
-            Assert.Equal("mailto:test@test.com", action.Contact[0]);
-        }
+public class CreateAccountRequestTests
+{
+    [Fact]
+    public void CanConstruct()
+    {
+        var request = new CreateAccountRequest(true, new[] { "mailto:test@test.com" }, false);
+
+        Assert.True(request.TermsOfServiceAgreed);
+        Assert.Equal("mailto:test@test.com", request.Contact[0]);
     }
 }
