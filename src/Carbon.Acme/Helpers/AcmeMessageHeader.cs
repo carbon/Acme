@@ -2,33 +2,32 @@
 
 using Carbon.Jose;
 
-namespace Carbon.Acme
+namespace Carbon.Acme;
+
+public sealed class AcmeMessageHeader
 {
-    public sealed class AcmeMessageHeader
+    public AcmeMessageHeader(Nonce nonce, string url)
     {
-        public AcmeMessageHeader(Nonce nonce, string url)
-        {
-            Nonce = nonce.Value;
-            Url = url;
-        }
+        Nonce = nonce.Value;
+        Url = url;
+    }
 
-        [JsonPropertyName("alg")]
-        public string Alg => AlgorithmNames.RS256;
+    [JsonPropertyName("alg")]
+    public string Alg => AlgorithmNames.RS256;
 
-        [JsonPropertyName("nonce")]
-        public string Nonce { get; }
+    [JsonPropertyName("nonce")]
+    public string Nonce { get; }
 
-        [JsonPropertyName("url")]
-        public string Url { get; }
+    [JsonPropertyName("url")]
+    public string Url { get; }
 
 #nullable enable
 
-        [JsonPropertyName("kid")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Kid { get; set; }
+    [JsonPropertyName("kid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Kid { get; set; }
 
-        [JsonPropertyName("jwk")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Jwk? Jwk { get; set; }
-    }
+    [JsonPropertyName("jwk")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Jwk? Jwk { get; set; }
 }
