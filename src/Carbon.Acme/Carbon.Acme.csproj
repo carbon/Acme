@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Carbon.Jose" Version="0.65.0" />
+    <PackageReference Include="Carbon.Jose" Version="0.67.0" />
   </ItemGroup>
 
 </Project>
