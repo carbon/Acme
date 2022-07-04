@@ -6,8 +6,10 @@ namespace Carbon.Acme;
 
 public sealed class DeactivateAuthorizationRequest
 {
-    public DeactivateAuthorizationRequest(string url!!)
+    public DeactivateAuthorizationRequest(string url)
     {
+        ArgumentNullException.ThrowIfNull(Url);
+
         Url = url;
     }
 

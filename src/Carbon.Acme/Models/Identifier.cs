@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Carbon.Acme;
 
@@ -9,8 +8,11 @@ public sealed class Identifier : IEquatable<Identifier>
     public Identifier() { }
 #nullable enable
 
-    public Identifier(string type!!, string value!!)
+    public Identifier(string type, string value)
     {
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(value);
+
         Type = type;
         Value = value;
     }
