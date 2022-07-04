@@ -1,11 +1,11 @@
-﻿using System;
-
-namespace Carbon.Acme;
+﻿namespace Carbon.Acme;
 
 public readonly struct Nonce
 {
-    public Nonce(string value!!, DateTime created)
+    public Nonce(string value, DateTime created)
     {
+        ArgumentNullException.ThrowIfNull(value);
+
         Value = value;
         Created = created;
     }

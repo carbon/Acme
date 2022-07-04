@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Carbon.Acme.Exceptions;
+﻿namespace Carbon.Acme.Exceptions;
 
 public sealed class AcmeException : Exception
 {
