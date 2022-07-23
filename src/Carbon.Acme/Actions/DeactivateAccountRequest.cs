@@ -6,8 +6,10 @@ namespace Carbon.Acme;
 
 public sealed class DeactivateAccountRequest
 {
-    public DeactivateAccountRequest(string url!!)
+    public DeactivateAccountRequest(string url)
     {
+        ArgumentNullException.ThrowIfNull(url);
+
         Url = url;
     }
 

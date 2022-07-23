@@ -6,14 +6,18 @@ namespace Carbon.Acme;
 
 public sealed class RevokeCertificateRequest
 {
-    public RevokeCertificateRequest(byte[] certificate!!, int? reason = null)
+    public RevokeCertificateRequest(byte[] certificate, int? reason = null)
     {
+        ArgumentNullException.ThrowIfNull(certificate);
+
         Certificate = Base64Url.Encode(certificate);
         Reason = reason;
     }
 
-    public RevokeCertificateRequest(string certificate!!, int? reason = null)
+    public RevokeCertificateRequest(string certificate, int? reason = null)
     {
+        ArgumentNullException.ThrowIfNull(certificate);
+
         Certificate = certificate;
         Reason = reason;
     }

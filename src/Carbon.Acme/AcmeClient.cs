@@ -35,8 +35,9 @@ public class AcmeClient
 
     private readonly ConcurrentQueue<Nonce> nonces = new ();
 
-    public AcmeClient(RSA privateKey!!, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
+    public AcmeClient(RSA privateKey, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
     {
+        ArgumentNullException.ThrowIfNull(privateKey);
         ArgumentNullException.ThrowIfNull(directoryUrl);
 
         _accountUrl = accountUrl;
@@ -418,8 +419,10 @@ public class AcmeClient
         return _thumbprint;
     }
 
-    public string GetKeyAuthorization(string token!!)
+    public string GetKeyAuthorization(string token)
     {
+        ArgumentNullException.ThrowIfNull(token);
+
         return token + "." + GetSha256Thumbprint();
     }
 
@@ -573,7 +576,7 @@ public class AcmeClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new AcmeException("Invalid response: " + responseText);
+            throw new AcmeException($"Invalid response: {responseText}");
         }
 
         // TODO: error handling
@@ -625,12 +628,13 @@ public class AcmeClient
         return header;
     }
 
-    private static readonly JsonSerializerOptions jso = new () { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+    private static readonly JsonSerializerOptions jso = new () {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
 
     private static string GetBase64UrlEncodedJson<T>(T instance)
+        where T: notnull
     {
-        byte[] utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(instance, jso);
-
-        return Base64Url.Encode(utf8Bytes);
+        return Base64Url.Encode(JsonSerializer.SerializeToUtf8Bytes(instance, jso));
     }
 }

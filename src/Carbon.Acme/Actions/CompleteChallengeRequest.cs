@@ -4,8 +4,10 @@ namespace Carbon.Acme;
 
 public sealed class CompleteChallengeRequest
 {
-    public CompleteChallengeRequest(string url!!)
+    public CompleteChallengeRequest(string url)
     {
+        ArgumentNullException.ThrowIfNull(url);
+
         Url = url;
     }
 

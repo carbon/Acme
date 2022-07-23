@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Carbon.Acme;
 
@@ -16,10 +15,12 @@ public sealed class CreateOrderRequest
     }
 
     public CreateOrderRequest(
-        Identifier[] identifiers!!,
+        Identifier[] identifiers,
         DateTime? notBefore = null,
         DateTime? notAfter = null)
     {
+        ArgumentNullException.ThrowIfNull(identifiers);
+
         Identifiers = identifiers;
         NotBefore = notBefore;
         NotAfter = notAfter;
@@ -29,9 +30,11 @@ public sealed class CreateOrderRequest
     public Identifier[] Identifiers { get; }
 
     [JsonPropertyName("notBefore")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTime? NotBefore { get; }
 
     [JsonPropertyName("notAfter")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTime? NotAfter { get; }
 }
 
