@@ -485,10 +485,7 @@ public class AcmeClient
     {
         await InitializeDirectoryAsync().ConfigureAwait(false);
 
-        if (_accountUrl is null)
-        {
-            _accountUrl = await GetAccountUrlAsync().ConfigureAwait(false);
-        }
+        _accountUrl ??= await GetAccountUrlAsync().ConfigureAwait(false);
     }
 
     private async Task InitializeDirectoryAsync()
