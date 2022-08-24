@@ -18,7 +18,8 @@ public class AuthorizationTest
     [Fact]
     public void CanDeserialize()
     {
-        var model = JsonSerializer.Deserialize<Authorization>("""
+        var model = JsonSerializer.Deserialize<Authorization>(
+            """
             {
               "status": "valid",
               "expires": "2015-03-01T14:09:00Z",

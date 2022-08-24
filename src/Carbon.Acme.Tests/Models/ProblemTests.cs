@@ -9,7 +9,8 @@ public class ProblemTests
     [Fact]
     public void CanDeserialize()
     {
-        var model = JsonSerializer.Deserialize<Problem>("""
+        var model = JsonSerializer.Deserialize<Problem>(
+            """
             {
               "type": "urn:ietf:params:acme:error:unauthorized",
               "detail": "No authorization provided for name example.net"

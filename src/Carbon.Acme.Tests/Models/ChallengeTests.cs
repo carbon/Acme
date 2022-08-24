@@ -7,7 +7,8 @@ public class ChallengeTests
     [Fact]
     public void CanDeserialize_Dns01()
     {
-        var model = JsonSerializer.Deserialize<Challenge>("""
+        var model = JsonSerializer.Deserialize<Challenge>(
+            """
             {
               "type": "dns-01",
               "url": "https://example.com/acme/authz/1234/2",
@@ -25,7 +26,8 @@ public class ChallengeTests
     [Fact]
     public void CanDeserialize_Http01()
     {
-        var model = JsonSerializer.Deserialize<Challenge>("""
+        var model = JsonSerializer.Deserialize<Challenge>(
+            """
             {
               "type": "http-01",
               "url": "https://example.com/acme/authz/0",
@@ -43,7 +45,8 @@ public class ChallengeTests
     [Fact]
     public void CanDeserializeError()
     {
-        var model = JsonSerializer.Deserialize<Challenge>("""
+        var model = JsonSerializer.Deserialize<Challenge>(
+            """
             {
               "type": "dns-01",
               "status": "invalid",

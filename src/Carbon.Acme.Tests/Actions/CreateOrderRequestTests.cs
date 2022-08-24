@@ -11,7 +11,8 @@ public class CreateOrderRequestTests
         
         Assert.Equal(new Identifier("dns", "test.com"), request.Identifiers[0]);
 
-        Assert.Equal("""
+        Assert.Equal(
+            """
             {
               "identifiers": [
                 {
