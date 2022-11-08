@@ -9,6 +9,8 @@ public sealed class CreateOrderRequest
       DateTime? notBefore = null,
       DateTime? notAfter = null)
     {
+        ArgumentException.ThrowIfNullOrEmpty(domainName);
+
         Identifiers = new[] { new Identifier("dns", domainName) };
         NotBefore = notBefore;
         NotAfter = notAfter;

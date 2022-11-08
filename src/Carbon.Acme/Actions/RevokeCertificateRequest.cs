@@ -16,7 +16,7 @@ public sealed class RevokeCertificateRequest
 
     public RevokeCertificateRequest(string certificate, int? reason = null)
     {
-        ArgumentNullException.ThrowIfNull(certificate);
+        ArgumentException.ThrowIfNullOrEmpty(certificate);
 
         Certificate = certificate;
         Reason = reason;

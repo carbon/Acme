@@ -6,7 +6,7 @@ public sealed class DeactivateAccountRequest
 {
     public DeactivateAccountRequest(string url)
     {
-        ArgumentNullException.ThrowIfNull(url);
+        ArgumentException.ThrowIfNullOrEmpty(url);
 
         Url = url;
     }

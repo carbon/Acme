@@ -6,7 +6,7 @@ public sealed class DeactivateAuthorizationRequest
 {
     public DeactivateAuthorizationRequest(string url)
     {
-        ArgumentNullException.ThrowIfNull(Url);
+        ArgumentException.ThrowIfNullOrEmpty(Url);
 
         Url = url;
     }

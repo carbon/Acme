@@ -6,7 +6,7 @@ public sealed class CompleteChallengeRequest
 {
     public CompleteChallengeRequest(string url)
     {
-        ArgumentNullException.ThrowIfNull(url);
+        ArgumentException.ThrowIfNullOrEmpty(url);
 
         Url = url;
     }

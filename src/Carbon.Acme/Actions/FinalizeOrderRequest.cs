@@ -8,7 +8,7 @@ public sealed class FinalizeOrderRequest
 {
     public FinalizeOrderRequest(string url, byte[] csr)
     {
-        ArgumentNullException.ThrowIfNull(url);
+        ArgumentException.ThrowIfNullOrEmpty(url);
         ArgumentNullException.ThrowIfNull(csr);
 
         Url = url;
@@ -17,8 +17,8 @@ public sealed class FinalizeOrderRequest
 
     public FinalizeOrderRequest(string url, string csr)
     {
-        ArgumentNullException.ThrowIfNull(url);
-        ArgumentNullException.ThrowIfNull(csr);
+        ArgumentException.ThrowIfNullOrEmpty(url);
+        ArgumentException.ThrowIfNullOrEmpty(csr);
 
         Url = url;
         Csr = csr;
