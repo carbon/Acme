@@ -2,31 +2,26 @@
 
 namespace Carbon.Acme;
 
-public sealed class Identifier : IEquatable<Identifier>
+public readonly struct Identifier : IEquatable<Identifier>
 {
-#nullable disable
-    public Identifier() { }
-#nullable enable
-
+    [JsonConstructor]
     public Identifier(string type, string value)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(value);
+        ArgumentException.ThrowIfNullOrEmpty(type);
+        ArgumentException.ThrowIfNullOrEmpty(value);
 
         Type = type;
         Value = value;
     }
 
     [JsonPropertyName("type")]
-    public string Type { get; init; }
+    public string Type { get; }
 
     [JsonPropertyName("value")]
-    public string Value { get; init; }
+    public string Value { get; }
 
-    public bool Equals(Identifier? other)
+    public bool Equals(Identifier other)
     {
-        if (other is null) return this is null;
-
         return string.Equals(Type, other.Type, StringComparison.Ordinal)
             && string.Equals(Value, other.Value, StringComparison.Ordinal);
     }
@@ -39,5 +34,15 @@ public sealed class Identifier : IEquatable<Identifier>
     public override int GetHashCode()
     {
         return HashCode.Combine(Type, Value);
+    }
+
+    public static bool operator ==(Identifier left, Identifier right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Identifier left, Identifier right)
+    {
+        return !left.Equals(right);
     }
 }

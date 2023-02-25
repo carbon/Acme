@@ -12,6 +12,8 @@ public sealed class Subproblem
     [JsonPropertyName("detail")]
     public string Detail { get; init; }
 
+#nullable enable
+
     [JsonPropertyName("identifier")]
-    public Identifier Identifier { get; init; }
+    public Identifier? Identifier { get; init; }
 }

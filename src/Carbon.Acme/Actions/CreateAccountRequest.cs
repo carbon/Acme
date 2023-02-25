@@ -2,7 +2,7 @@
 
 namespace Carbon.Acme;
 
-public class CreateAccountRequest
+public sealed class CreateAccountRequest
 {
     public CreateAccountRequest(
         bool termsOfServiceAgreed,

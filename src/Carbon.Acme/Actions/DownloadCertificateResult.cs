@@ -1,6 +1,6 @@
 ﻿namespace Carbon.Acme;
 
-public class DownloadCertificateResult
+public sealed class DownloadCertificateResult
 {
     public DownloadCertificateResult(string contentType, string body)
     {

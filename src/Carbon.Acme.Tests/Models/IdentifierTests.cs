@@ -12,6 +12,6 @@ public class IdentifierTests
         Assert.Equal("dns", identifier.Type);
         Assert.Equal("abc.com", identifier.Value);
 
-        Assert.Equal("dns", JsonSerializer.Deserialize <Identifier>(JsonSerializer.Serialize(identifier)).Type);
+        Assert.Equal("dns", JsonSerializer.Deserialize<Identifier>(JsonSerializer.Serialize(identifier)).Type);
     }
 }
