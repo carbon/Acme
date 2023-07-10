@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using Carbon.Acme.Exceptions;
 using Carbon.Extensions;
 using Carbon.Jose;
+using Carbon.Jose.Serialization;
 
 namespace Carbon.Acme;
 
@@ -21,7 +22,7 @@ namespace Carbon.Acme;
 
 public class AcmeClient
 {
-    private readonly HttpClient httpClient = new () {
+    private readonly HttpClient _httpClient = new () {
         DefaultRequestHeaders = {
             {  "User-Agent", "Carbon.Acme/2" }
         }
@@ -33,12 +34,15 @@ public class AcmeClient
     private string? _accountUrl;
     private Directory? _directory;
 
-    private readonly ConcurrentQueue<Nonce> nonces = new ();
+    private readonly ConcurrentQueue<Nonce> _nonces = new();
 
-    public AcmeClient(RSA privateKey, string? accountUrl = null, string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
+    public AcmeClient(
+        RSA privateKey,
+        string? accountUrl = null,
+        string directoryUrl = "https://acme-v02.api.letsencrypt.org/directory")
     {
         ArgumentNullException.ThrowIfNull(privateKey);
-        ArgumentNullException.ThrowIfNull(directoryUrl);
+        ArgumentException.ThrowIfNullOrEmpty(directoryUrl);
 
         _accountUrl = accountUrl;
         _directoryUrl = directoryUrl;
@@ -452,9 +456,9 @@ public class AcmeClient
             await InitializeDirectoryAsync().ConfigureAwait(false);
         }
 
-        while (nonces.TryDequeue(out Nonce nonce))
+        while (_nonces.TryDequeue(out Nonce nonce))
         {
-            // Ingore nonces older than 1 minute old
+            // Ignore nonces older than 1 minute old
             if (nonce.Age > TimeSpan.FromMinutes(1))
             {
                 continue;
@@ -466,7 +470,7 @@ public class AcmeClient
         // HEAD /acme/new-nonce HTTP/1.1 ->
         // Replay-Nonce: oFvnlFP1wIhRlYS2jTaXbA
 
-        using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, _directory!.NewNonceUrl)).ConfigureAwait(false);
+        using HttpResponseMessage response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, _directory!.NewNonceUrl)).ConfigureAwait(false);
 
         string replayNonce = response.Headers.NonValidated["Replay-Nonce"].ToString();
 
@@ -494,7 +498,7 @@ public class AcmeClient
 
         if (_directory is null)
         {
-            var directoryStream = await httpClient.GetStreamAsync(_directoryUrl).ConfigureAwait(false);
+            var directoryStream = await _httpClient.GetStreamAsync(_directoryUrl).ConfigureAwait(false);
 
             _directory = await JsonSerializer.DeserializeAsync<Directory>(directoryStream).ConfigureAwait(false);
         }
@@ -522,34 +526,31 @@ public class AcmeClient
     private async Task<(HttpStatusCode statusCode, string? location, string responseText)> PostAsync(string url, JwsEncodedMessage message)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, url) {
-            Content = new StringContent(
-                content   : JsonSerializer.Serialize(message),
-                encoding  : Encoding.UTF8,
-                mediaType : "application/jose+json"
-            )
+            Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(message, JoseJsonSerializerContext.Default.JwsEncodedMessage)) {
+                Headers = {
+                    { "Content-Type", "application/jose+json" }
+                }
+            }
         };
-
-        // Remove the charset
-        request.Content.Headers.ContentType!.CharSet = null;
 
         return await SendAsync(request).ConfigureAwait(false);
     }
 
     private async Task<(HttpStatusCode statusCode, string? location, string responseText)> SendAsync(HttpRequestMessage request)
     {
-        using HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
+        using HttpResponseMessage response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
         // capture the replay nonce for the next request
         if (request.Method == HttpMethod.Post &&
             response.Headers.NonValidated.TryGetValues("Replay-Nonce", out var replayNonce))
         {
             // ensure the queue does not exceed 3 entries
-            if (nonces.Count > 3)
+            if (_nonces.Count > 3)
             {
-                nonces.TryDequeue(out _); // remove the oldest nonce when the queue exceeds three entries
+                _nonces.TryDequeue(out _); // remove the oldest nonce when the queue exceeds three entries
             }
 
-            nonces.Enqueue(new Nonce(replayNonce.ToString(), DateTime.UtcNow));
+            _nonces.Enqueue(new Nonce(replayNonce.ToString(), DateTime.UtcNow));
         }
 
         // Content-Type is null when only a Location is returned

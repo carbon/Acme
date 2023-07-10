@@ -15,7 +15,7 @@ public class SigningTests
     private static Dictionary<string, object> GetMessageHeader(string url, in Nonce nonce)
     {
         var header = new Dictionary<string, object>(5) {
-            { "alg",   AlgorithmNames.RS256 },
+            { "alg",   AlgNames.RS256 },
             { "nonce", nonce.Value },
             { "url",   url }
         };
