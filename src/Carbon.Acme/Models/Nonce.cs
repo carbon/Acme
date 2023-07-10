@@ -1,18 +1,10 @@
 ﻿namespace Carbon.Acme;
 
-public readonly struct Nonce
+public readonly struct Nonce(string value, DateTime created)
 {
-    public Nonce(string value, DateTime created)
-    {
-        ArgumentNullException.ThrowIfNull(value);
+    public string Value { get; } = value ?? throw new ArgumentNullException(nameof(value));
 
-        Value = value;
-        Created = created;
-    }
-
-    public string Value { get; }
-
-    public DateTime Created { get; }
+    public DateTime Created { get; } = created;
 
     public TimeSpan Age => DateTime.UtcNow - Created;
 }

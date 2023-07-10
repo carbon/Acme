@@ -2,23 +2,14 @@
 
 namespace Carbon.Acme;
 
-public readonly struct Identifier : IEquatable<Identifier>
+[method: JsonConstructor]
+public readonly struct Identifier(string type, string value) : IEquatable<Identifier>
 {
-    [JsonConstructor]
-    public Identifier(string type, string value)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(type);
-        ArgumentException.ThrowIfNullOrEmpty(value);
-
-        Type = type;
-        Value = value;
-    }
-
     [JsonPropertyName("type")]
-    public string Type { get; }
+    public string Type { get; } = type ?? throw new ArgumentNullException(nameof(type));
 
     [JsonPropertyName("value")]
-    public string Value { get; }
+    public string Value { get; } = value ?? throw new ArgumentNullException(nameof(value));
 
     public bool Equals(Identifier other)
     {

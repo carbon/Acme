@@ -4,22 +4,16 @@ using Carbon.Jose;
 
 namespace Carbon.Acme;
 
-public sealed class AcmeMessageHeader
+public sealed class AcmeMessageHeader(Nonce nonce, string url)
 {
-    public AcmeMessageHeader(Nonce nonce, string url)
-    {
-        Nonce = nonce.Value;
-        Url = url;
-    }
-
     [JsonPropertyName("alg")]
-    public string Alg => AlgorithmNames.RS256;
+    public string Alg => AlgNames.RS256;
 
     [JsonPropertyName("nonce")]
-    public string Nonce { get; }
+    public string Nonce { get; } = nonce.Value;
 
     [JsonPropertyName("url")]
-    public string Url { get; }
+    public string Url { get; } = url;
 
 #nullable enable
 
