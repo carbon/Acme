@@ -2,26 +2,19 @@
 
 namespace Carbon.Acme;
 
-public sealed class CreateAccountRequest
+public sealed class CreateAccountRequest(
+    bool termsOfServiceAgreed,
+    string[]? contact,
+    bool? onlyReturnExisting = null)
 {
-    public CreateAccountRequest(
-        bool termsOfServiceAgreed,
-        string[]? contact,
-        bool? onlyReturnExisting = null)
-    {
-        TermsOfServiceAgreed = termsOfServiceAgreed;
-        Contact = contact;
-        OnlyReturnExisting = onlyReturnExisting;
-    }
-
     [JsonPropertyName("termsOfServiceAgreed")]
-    public bool TermsOfServiceAgreed { get; }
+    public bool TermsOfServiceAgreed { get; } = termsOfServiceAgreed;
 
     [JsonPropertyName("contact")]
-    public string[]? Contact { get; }
+    public string[]? Contact { get; } = contact;
 
     [JsonPropertyName("onlyReturnExisting")]
-    public bool? OnlyReturnExisting { get; }
+    public bool? OnlyReturnExisting { get; } = onlyReturnExisting;
 }
 
 
