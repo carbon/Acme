@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 
+using Carbon.Acme.Serialization;
+
 using Carbon.Acme.Exceptions;
 
 namespace Carbon.Acme.Tests;
@@ -9,22 +11,22 @@ public class ProblemTests
     [Fact]
     public void CanDeserialize()
     {
-        var model = JsonSerializer.Deserialize<Problem>(
+        Problem problem = JsonSerializer.Deserialize(
             """
             {
               "type": "urn:ietf:params:acme:error:unauthorized",
               "detail": "No authorization provided for name example.net"
             }
-            """);
+            """, AcmeSerializerContext.Default.Problem);
 
-        Assert.Equal("urn:ietf:params:acme:error:unauthorized",         model.Type);
-        Assert.Equal("No authorization provided for name example.net",  model.Detail);
+        Assert.Equal("urn:ietf:params:acme:error:unauthorized",         problem.Type);
+        Assert.Equal("No authorization provided for name example.net",  problem.Detail);
     }
 
     [Fact]
     public void CanDeserializeNestedSubproblems()
     {
-        var problem = JsonSerializer.Deserialize<Problem>(
+        Problem problem = JsonSerializer.Deserialize(
             """
             {
                 "type": "urn:ietf:params:acme:error:malformed",
@@ -48,7 +50,7 @@ public class ProblemTests
                     }
                 ]
             }
-            """);
+            """, AcmeSerializerContext.Default.Problem);
 
         Assert.Equal("urn:ietf:params:acme:error:malformed",            problem.Type);
         Assert.Equal("Some of the identifiers requested were rejected", problem.Detail);

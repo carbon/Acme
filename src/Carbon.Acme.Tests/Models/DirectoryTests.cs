@@ -1,5 +1,7 @@
 using System.Text.Json;
 
+using Carbon.Acme.Serialization;
+
 namespace Carbon.Acme.Tests;
 
 public class DirectoryTests
@@ -7,7 +9,7 @@ public class DirectoryTests
     [Fact]
     public void CanDeserialize()
     {
-        var model = JsonSerializer.Deserialize<Directory>(
+        Directory directory = JsonSerializer.Deserialize(
             """
             {
               "newNonce": "https://example.com/acme/new-nonce",
@@ -23,14 +25,14 @@ public class DirectoryTests
                 "externalAccountRequired": false
                 }
             }
-            """);
+            """, AcmeSerializerContext.Default.Directory);
         
-        Assert.Equal("https://example.com/acme/new-nonce",   model.NewNonceUrl);
-        Assert.Equal("https://example.com/acme/new-authz",   model.NewAuthorizationUrl);
-        Assert.Equal("https://example.com/acme/revoke-cert", model.RevokeCertificateUrl);
-        Assert.Equal("https://example.com/acme/key-change",  model.KeyChangeUrl);
+        Assert.Equal("https://example.com/acme/new-nonce",   directory.NewNonceUrl);
+        Assert.Equal("https://example.com/acme/new-authz",   directory.NewAuthorizationUrl);
+        Assert.Equal("https://example.com/acme/revoke-cert", directory.RevokeCertificateUrl);
+        Assert.Equal("https://example.com/acme/key-change",  directory.KeyChangeUrl);
 
-        var meta = model.Meta;
+        var meta = directory.Meta;
 
         Assert.Equal("https://example.com/acme/terms/2017-5-30", meta.TermsOfService);
         Assert.Equal("https://www.example.com/",                 meta.Website);

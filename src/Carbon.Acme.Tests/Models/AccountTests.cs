@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 
+using Carbon.Acme.Serialization;
+
 namespace Carbon.Acme.Tests;
 
 public class AccountTests
@@ -7,7 +9,7 @@ public class AccountTests
     [Fact]
     public void CanDeserialize()
     {
-        Account model = JsonSerializer.Deserialize<Account>(
+        Account model = JsonSerializer.Deserialize(
             """
             {
               "status": "valid",
@@ -18,7 +20,7 @@ public class AccountTests
               "termsOfServiceAgreed": true,
               "orders": "https://example.com/acme/acct/1/orders"
             }
-            """);
+            """, AcmeSerializerContext.Default.Account);
 
         Assert.Equal("mailto:cert-admin@example.com", model.Contact[0]);
         Assert.Equal("tel:+12025551212",              model.Contact[1]);

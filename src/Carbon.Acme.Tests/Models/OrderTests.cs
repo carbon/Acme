@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 
+using Carbon.Acme.Serialization;
+
 namespace Carbon.Acme.Tests;
 
 public class OrderTests
@@ -17,7 +19,7 @@ public class OrderTests
     [Fact]
     public void CanDeserialize()
     {
-        var model = JsonSerializer.Deserialize<Order>(
+        Order order = JsonSerializer.Deserialize(
             """
             {
               "status": "pending",
@@ -35,30 +37,30 @@ public class OrderTests
               "finalize": "https://example.com/acme/acct/1/order/1/finalize",
               "certificate": "https://example.com/acme/cert/1234"
             }
-            """);
+            """, AcmeSerializerContext.Default.Order);
 
-        Assert.Equal(OrderStatus.Pending,                                       model.Status);
+        Assert.Equal(OrderStatus.Pending,                                       order.Status);
         // Assert.Equal(IsoDate.Parse("2015-03-01T14:09:00Z").ToUtcDateTime(),     model.Expires);
-        Assert.Equal("https://example.com/acme/acct/1/order/1/finalize",        model.FinalizeUrl);
-        Assert.Equal("https://example.com/acme/cert/1234",                      model.CertificateUrl);
+        Assert.Equal("https://example.com/acme/acct/1/order/1/finalize",        order.FinalizeUrl);
+        Assert.Equal("https://example.com/acme/cert/1234",                      order.CertificateUrl);
 
-        Assert.Equal(new Identifier("dns", "example.com"),                      model.Identifiers[0]);
-        Assert.Equal(new Identifier("dns", "www.example.com"),                  model.Identifiers[1]);
+        Assert.Equal(new Identifier("dns", "example.com"),                      order.Identifiers[0]);
+        Assert.Equal(new Identifier("dns", "www.example.com"),                  order.Identifiers[1]);
 
-        Assert.Equal("https://example.com/acme/authz/1234", model.AuthorizationUrls[0]);
-        Assert.Equal("https://example.com/acme/authz/2345", model.AuthorizationUrls[1]);
+        Assert.Equal("https://example.com/acme/authz/1234", order.AuthorizationUrls[0]);
+        Assert.Equal("https://example.com/acme/authz/2345", order.AuthorizationUrls[1]);
     }
 
     [Fact]
     public void CanDeserialize_Ready()
     {
-        var model = JsonSerializer.Deserialize<Order>(
+        var model = JsonSerializer.Deserialize(
             """
             {
               "status": "ready",
               "finalize": "https://example.com/acme/acct/1/order/1/finalize"
             }
-            """);
+            """, AcmeSerializerContext.Default.Order);
 
         Assert.Equal(OrderStatus.Ready, model.Status);
     }

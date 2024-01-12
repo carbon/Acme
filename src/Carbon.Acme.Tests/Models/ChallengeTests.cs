@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 
+using Carbon.Acme.Serialization;
+
 namespace Carbon.Acme.Tests;
 
 public class ChallengeTests
@@ -7,7 +9,7 @@ public class ChallengeTests
     [Fact]
     public void CanDeserialize_Dns01()
     {
-        var model = JsonSerializer.Deserialize<Challenge>(
+        Challenge model = JsonSerializer.Deserialize(
             """
             {
               "type": "dns-01",
@@ -15,7 +17,7 @@ public class ChallengeTests
               "status": "pending",
               "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
             }
-            """);
+            """, AcmeSerializerContext.Default.Challenge);
 
         Assert.Equal("dns-01",                                      model.Type);
         Assert.Equal("https://example.com/acme/authz/1234/2",       model.Url);
@@ -26,7 +28,7 @@ public class ChallengeTests
     [Fact]
     public void CanDeserialize_Http01()
     {
-        var model = JsonSerializer.Deserialize<Challenge>(
+        Challenge model = JsonSerializer.Deserialize(
             """
             {
               "type": "http-01",
@@ -34,7 +36,7 @@ public class ChallengeTests
               "status": "valid",
               "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
             }
-            """);
+            """, AcmeSerializerContext.Default.Challenge);
 
         Assert.Equal("http-01", model.Type);
         Assert.Equal("https://example.com/acme/authz/0", model.Url);
@@ -45,7 +47,7 @@ public class ChallengeTests
     [Fact]
     public void CanDeserializeError()
     {
-        var model = JsonSerializer.Deserialize<Challenge>(
+        Challenge model = JsonSerializer.Deserialize(
             """
             {
               "type": "dns-01",
@@ -58,7 +60,7 @@ public class ChallengeTests
               "url": "https://acme-v02.api.letsencrypt.org/acme/challenge/x/x",
               "token": "x"
             }
-            """);
+            """, AcmeSerializerContext.Default.Challenge);
 
         Assert.Equal("dns-01", model.Type);
         Assert.Equal(ChallengeStatus.Invalid, model.Status);

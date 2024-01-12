@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 
+using Carbon.Acme.Serialization;
+
 namespace Carbon.Acme.Tests;
 
 public class AuthorizationTest
@@ -18,7 +20,7 @@ public class AuthorizationTest
     [Fact]
     public void CanDeserialize()
     {
-        var model = JsonSerializer.Deserialize<Authorization>(
+        Authorization model = JsonSerializer.Deserialize(
             """
             {
               "status": "valid",
@@ -39,7 +41,7 @@ public class AuthorizationTest
               ],
               "wildcard": false
             }
-            """);
+            """, AcmeSerializerContext.Default.Authorization);
         
         Assert.Equal("2015-03-01T14:09:00.0000000Z", model.Expires.Value.ToString("o"));
 

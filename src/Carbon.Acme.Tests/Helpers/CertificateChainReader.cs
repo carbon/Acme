@@ -5,17 +5,10 @@ using System.Text;
 
 namespace Carbon.Acme;
 
-public sealed class CertificateChainReader : IDisposable
+public sealed class CertificateChainReader(string text) : IDisposable
 {
-    private readonly StringReader reader;
-
-    private bool isEof;
-
-    public CertificateChainReader(string text)
-    {
-        reader = new StringReader(text);
-        isEof = false;
-    }
+    private readonly StringReader reader = new(text);
+    private bool isEof = false;
 
     public bool TryReadNext(out byte[]? der)
     {
