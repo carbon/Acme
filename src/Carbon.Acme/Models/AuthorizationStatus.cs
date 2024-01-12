@@ -2,7 +2,7 @@
 
 namespace Carbon.Acme;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<AuthorizationStatus>))]
 public enum AuthorizationStatus
 {
     Pending     = 1,

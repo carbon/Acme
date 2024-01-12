@@ -2,7 +2,7 @@
 
 namespace Carbon.Acme;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<AccountStatus>))]
 public enum AccountStatus
 {
     Unknown     = 0,

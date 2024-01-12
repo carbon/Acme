@@ -1,8 +1,10 @@
 ﻿#nullable disable
 
 using System.Net.Http;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+
+using Carbon.Acme.Serialization;
 
 namespace Carbon.Acme;
 
@@ -33,8 +35,8 @@ public sealed class Directory
     {
         using HttpClient http = new();
 
-        var responseStream = await http.GetStreamAsync(url).ConfigureAwait(false);
+        var result = await http.GetFromJsonAsync(url, AcmeSerializerContext.Default.Directory).ConfigureAwait(false);
 
-        return await JsonSerializer.DeserializeAsync<Directory>(responseStream).ConfigureAwait(false);
+        return result;
     }
 }

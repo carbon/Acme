@@ -1,14 +1,19 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using System.Text.Unicode;
 
 using Carbon.Acme.Exceptions;
+using Carbon.Acme.Serialization;
 using Carbon.Extensions;
 using Carbon.Jose;
 using Carbon.Jose.Serialization;
@@ -107,7 +112,7 @@ public class AcmeClient
 
         // -> 200 (OK) [Account]
 
-        return JsonSerializer.Deserialize<Account>(responseText)!;
+        return JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Account)!;
     }
 
     // https://tools.ietf.org/html/draft-ietf-acme-acme-09#section-7.3.7
@@ -127,7 +132,7 @@ public class AcmeClient
 
         // -> 200 (OK) [Account]
 
-        return JsonSerializer.Deserialize<Account>(responseText)!;
+        return JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Account)!;
     }
 
     /*
@@ -154,7 +159,7 @@ public class AcmeClient
 
     private async Task<(Authorization authorization, TimeSpan retryAfter)> GetAuthorizationAsyncInternal(string url)
     {
-        var result = await PostAsGetAsync<Authorization>(url).ConfigureAwait(false);
+        Authorization result = await PostAsGetAsync(url, AcmeSerializerContext.Default.Authorization).ConfigureAwait(false);
 
         var retryAfter = TimeSpan.FromSeconds(2);
 
@@ -195,7 +200,7 @@ public class AcmeClient
 
         int retryCount = 0;
 
-        while (result.Status == AuthorizationStatus.Pending && retryCount < 5)
+        while (result.Status is AuthorizationStatus.Pending && retryCount < 5)
         {
             await Task.Delay(retryAfter).ConfigureAwait(false);
 
@@ -222,14 +227,14 @@ public class AcmeClient
 
         // -> 200 (OK) [Authorization]
 
-        return JsonSerializer.Deserialize<Authorization>(responseText)!;
+        return JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Authorization)!;
     }
 
     public async Task<Challenge> GetChallengeAsync(string url)
     {
         ArgumentNullException.ThrowIfNull(url);
 
-        return await PostAsGetAsync<Challenge>(url).ConfigureAwait(false);
+        return await PostAsGetAsync(url, AcmeSerializerContext.Default.Challenge).ConfigureAwait(false);
     }
 
     // 7.5.1. Responding to Challenges
@@ -250,7 +255,7 @@ public class AcmeClient
 
         // -> 200 (OK) [Challenge]
 
-        return JsonSerializer.Deserialize<Challenge>(responseText)!;
+        return JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Challenge)!;
     }
 
     #endregion
@@ -261,7 +266,7 @@ public class AcmeClient
     {
         ArgumentNullException.ThrowIfNull(url);
 
-        return await PostAsGetAsync<Order>(url).ConfigureAwait(false);
+        return await PostAsGetAsync(url, AcmeSerializerContext.Default.Order).ConfigureAwait(false);
     }
 
     public async Task<OrderList> ListOrdersAsync(string url)
@@ -270,7 +275,7 @@ public class AcmeClient
 
         // Link: <https://example.com/acme/acct/1/orders?cursor=2>, rel="next"
 
-        return await PostAsGetAsync<OrderList>(url).ConfigureAwait(false);
+        return await PostAsGetAsync(url, AcmeSerializerContext.Default.OrderList).ConfigureAwait(false);
     }
 
     // POST /acme/new-order
@@ -292,7 +297,7 @@ public class AcmeClient
 
         // -> 201 (Created) [Order]
 
-        var result = JsonSerializer.Deserialize<Order>(responseText)!;
+        Order result = JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Order)!;
 
         result.Url = location!;
 
@@ -318,7 +323,7 @@ public class AcmeClient
 
         // -> 200 (OK) [Order]
 
-        return JsonSerializer.Deserialize<Order>(responseText)!;
+        return JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Order)!;
     }
 
     public async Task<Order> WaitForCertificateAsync(string orderUrl, TimeSpan timeout)
@@ -413,11 +418,18 @@ public class AcmeClient
             string e = Base64Url.Encode(_jwk.Exponent);
             string n = Base64Url.Encode(_jwk.Modulus);
 
-            string json = "{\"e\":\"" + e + "\",\"kty\":\"RSA\",\"n\":\"" + n + "\"}";
+            var rentedBuffer = ArrayPool<byte>.Shared.Rent(e.Length + n.Length + 64);
 
-            byte[] hash = SHA256.HashData(Encoding.ASCII.GetBytes(json));
+            Utf8.TryWrite(rentedBuffer, $$"""{"e":"{{e}}","kty":"RSA","n":"{{n}}"}""", out int messageLength);
+            var json = rentedBuffer.AsSpan(0, messageLength);
+
+            Span<byte> hash = stackalloc byte[SHA256.HashSizeInBytes];
+
+            SHA256.HashData(json, hash);
 
             _thumbprint = Base64Url.Encode(hash);
+
+            ArrayPool<byte>.Shared.Return(rentedBuffer);
         }
 
         return _thumbprint;
@@ -494,13 +506,11 @@ public class AcmeClient
 
     private async Task InitializeDirectoryAsync()
     {
-        // NOTE: The server MUST allow GET requests for the directory and newNonce resources(see Section 7.1)
+        // NOTE: The server MUST allow GET requests for the directory and newNonce resources (see Section 7.1)
 
         if (_directory is null)
         {
-            var directoryStream = await _httpClient.GetStreamAsync(_directoryUrl).ConfigureAwait(false);
-
-            _directory = await JsonSerializer.DeserializeAsync<Directory>(directoryStream).ConfigureAwait(false);
+            _directory = await _httpClient.GetFromJsonAsync(_directoryUrl, AcmeSerializerContext.Default.Directory).ConfigureAwait(false);
         }
     }
 
@@ -513,20 +523,20 @@ public class AcmeClient
         return responseText;
     }
 
-    private async Task<T> PostAsGetAsync<T>(string url)
+    private async Task<T> PostAsGetAsync<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
         where T : new()
     {
         var message = await GetSignedMessageAsync(url).ConfigureAwait(false);
 
         (_, _, string responseText) = await PostAsync(url, message).ConfigureAwait(false);
 
-        return JsonSerializer.Deserialize<T>(responseText)!;
+        return JsonSerializer.Deserialize<T>(responseText, jsonTypeInfo)!;
     }
 
     private async Task<(HttpStatusCode statusCode, string? location, string responseText)> PostAsync(string url, JwsEncodedMessage message)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, url) {
-            Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(message, JoseJsonSerializerContext.Default.JwsEncodedMessage)) {
+            Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(message, JoseSerializerContext.Default.JwsEncodedMessage)) {
                 Headers = {
                     { "Content-Type", "application/jose+json" }
                 }
@@ -567,7 +577,7 @@ public class AcmeClient
 
         if (contentType is "application/problem+json")
         {
-            var problem = JsonSerializer.Deserialize<Problem>(responseText)!;
+            var problem = JsonSerializer.Deserialize(responseText, AcmeSerializerContext.Default.Problem)!;
 
             throw new AcmeException(problem);
         }

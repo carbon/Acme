@@ -15,8 +15,6 @@ public sealed class AcmeMessageHeader(Nonce nonce, string url)
     [JsonPropertyName("url")]
     public string Url { get; } = url;
 
-#nullable enable
-
     [JsonPropertyName("kid")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Kid { get; set; }

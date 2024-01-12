@@ -21,5 +21,6 @@ public sealed class DirectoryMetadata
     public string[]? CaaIdentities { get; init; }
 
     [JsonPropertyName("externalAccountRequired")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? ExternalAccountRequired { get; init; }
 }

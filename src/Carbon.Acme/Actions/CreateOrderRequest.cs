@@ -11,7 +11,7 @@ public sealed class CreateOrderRequest
     {
         ArgumentException.ThrowIfNullOrEmpty(domainName);
 
-        Identifiers = new[] { new Identifier("dns", domainName) };
+        Identifiers = [new Identifier("dns", domainName)];
         NotBefore = notBefore;
         NotAfter = notAfter;
     }
