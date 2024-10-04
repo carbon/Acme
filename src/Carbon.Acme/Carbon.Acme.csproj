@@ -6,7 +6,7 @@
     <Version>0.49.0</Version>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>CA1822</NoWarn>
+    <NoWarn>$(NoWarn),CA1822</NoWarn>
     
     <!-- Package Details -->
     <Authors>iamcarbon</Authors>
