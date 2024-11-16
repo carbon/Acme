@@ -1,6 +1,5 @@
-﻿using System.Text.Json.Serialization;
-
-using Carbon.Extensions;
+﻿using System.Buffers.Text;
+using System.Text.Json.Serialization;
 
 namespace Carbon.Acme;
 
@@ -12,7 +11,7 @@ public sealed class FinalizeOrderRequest
         ArgumentNullException.ThrowIfNull(csr);
 
         Url = url;
-        Csr = Base64Url.Encode(csr);
+        Csr = Base64Url.EncodeToString(csr);
     }
 
     public FinalizeOrderRequest(string url, string csr)

@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Buffers.Text;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
@@ -14,7 +15,6 @@ using System.Text.Unicode;
 
 using Carbon.Acme.Exceptions;
 using Carbon.Acme.Serialization;
-using Carbon.Extensions;
 using Carbon.Jose;
 using Carbon.Jose.Serialization;
 
@@ -415,8 +415,8 @@ public class AcmeClient
         {
             _jwk ??= Jwk.FromRSAPublicParameters(_privateKey.ExportParameters(false));
 
-            string e = Base64Url.Encode(_jwk.Exponent);
-            string n = Base64Url.Encode(_jwk.Modulus);
+            string e = Base64Url.EncodeToString(_jwk.Exponent);
+            string n = Base64Url.EncodeToString(_jwk.Modulus);
 
             var rentedBuffer = ArrayPool<byte>.Shared.Rent(e.Length + n.Length + 64);
 
@@ -427,7 +427,7 @@ public class AcmeClient
 
             SHA256.HashData(json, hash);
 
-            _thumbprint = Base64Url.Encode(hash);
+            _thumbprint = Base64Url.EncodeToString(hash);
 
             ArrayPool<byte>.Shared.Return(rentedBuffer);
         }
@@ -452,7 +452,7 @@ public class AcmeClient
 
         byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(result));
 
-        return Base64Url.Encode(hash);
+        return Base64Url.EncodeToString(hash);
     }
 
     #endregion
@@ -508,10 +508,7 @@ public class AcmeClient
     {
         // NOTE: The server MUST allow GET requests for the directory and newNonce resources (see Section 7.1)
 
-        if (_directory is null)
-        {
-            _directory = await _httpClient.GetFromJsonAsync(_directoryUrl, AcmeSerializerContext.Default.Directory).ConfigureAwait(false);
-        }
+        _directory ??= await _httpClient.GetFromJsonAsync(_directoryUrl, AcmeSerializerContext.Default.Directory).ConfigureAwait(false);
     }
 
     private async Task<string> PostAsGetAsync(string url)
@@ -643,6 +640,6 @@ public class AcmeClient
     private static string GetBase64UrlEncodedJson<T>(T instance)
         where T: notnull
     {
-        return Base64Url.Encode(JsonSerializer.SerializeToUtf8Bytes(instance, jso));
+        return Base64Url.EncodeToString(JsonSerializer.SerializeToUtf8Bytes(instance, jso));
     }
 }
