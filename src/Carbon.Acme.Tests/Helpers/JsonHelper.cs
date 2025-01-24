@@ -1,6 +1,5 @@
-﻿using System.Text.Json;
-
-using Carbon.Extensions;
+﻿using System.Buffers.Text;
+using System.Text.Json;
 
 namespace Carbon.Acme.Tests;
 
@@ -10,6 +9,6 @@ internal static class JsonHelper
     {
         byte[] utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(instance, JSO.IgnoreNullValues);
 
-        return Base64Url.Encode(utf8Bytes);
+        return Base64Url.EncodeToString(utf8Bytes);
     }
 }
