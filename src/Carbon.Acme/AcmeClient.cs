@@ -521,7 +521,6 @@ public class AcmeClient
     }
 
     private async Task<T> PostAsGetAsync<T>(string url, JsonTypeInfo<T> jsonTypeInfo)
-        where T : new()
     {
         var message = await GetSignedMessageAsync(url).ConfigureAwait(false);
 
