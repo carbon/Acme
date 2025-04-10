@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Carbon.Acme.Tests/Carbon.Acme.Tests.csproj" />
+  <Project Path="Carbon.Acme/Carbon.Acme.csproj" />
+</Solution>
