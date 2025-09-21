@@ -1,45 +1,43 @@
-﻿using System;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Carbon.Json;
-using Carbon.Pkcs;
-using Xunit;
+﻿using System.Text.Json;
 
 namespace Carbon.Acme.Tests
 {
     public class ClientTests
     {
+
         // [Fact]
         public async Task B()
         {
-            var privateKey = RSA.Create(RSAPrivateKey.Decode(TestData.PrivateRSA256KeyText));
-            
+            var privateKey = TestData.GetPrivateKey();
+
             var client = new AcmeClient(privateKey, directoryUrl: "https://acme-staging-v02.api.letsencrypt.org/directory");
-            
+
             var accountUrl = await client.CreateAccountAsync(new CreateAccountRequest(termsOfServiceAgreed: true, new[] {
                 "mailto:test@processor.ai"
             }, false));
 
-            throw new Exception(JsonObject.FromObject(new { accountUrl }).ToString());
+            throw new Exception(JsonSerializer.Serialize(new { accountUrl }));
         }
 
         // [Fact]
         public async Task D()
         {
-            var privateKey = RSA.Create(RSAPrivateKey.Decode(TestData.PrivateRSA256KeyText));
+            var privateKey = TestData.GetPrivateKey();
 
             var client = new AcmeClient(privateKey, directoryUrl: "https://acme-staging-v02.api.letsencrypt.org/directory");
 
             var accountUrl = await client.GetAccountUrlAsync();
 
-            throw new Exception(JsonObject.FromObject(new { accountUrl }).ToString());
+            throw new Exception(JsonSerializer.Serialize(new { accountUrl }));
         }
 
         // [Fact]
         public async Task C()
-        {            
+        {   
+            var privateKey = TestData.GetPrivateKey();   
+
             var client = new AcmeClient(
-                privateKey   : RSA.Create(RSAPrivateKey.Decode(TestData.PrivateRSA256KeyText)),
+                privateKey   :  privateKey,
                 accountUrl   : "https://acme-staging-v02.api.letsencrypt.org/acme/acct/5363173",
                 directoryUrl : "https://acme-staging-v02.api.letsencrypt.org/directory"
             );
@@ -50,14 +48,14 @@ namespace Carbon.Acme.Tests
 
             var order = await client.CreateOrderAsync(request);
 
-            throw new Exception(JsonObject.FromObject(new { order, order.Url }).ToString());
+            throw new Exception(JsonSerializer.Serialize(new { order, order.Url }));
         }
 
 
         [Fact]
         public async Task GetNonce()
         {
-            var privateKey = RSA.Create(RSAPrivateKey.Decode(TestData.PrivateRSA256KeyText));
+            var privateKey = TestData.GetPrivateKey();
 
             var client = new AcmeClient(privateKey, directoryUrl: "https://acme-staging-v02.api.letsencrypt.org/directory");
 

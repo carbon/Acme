@@ -610,9 +610,10 @@ public class AcmeClient
         AcmeMessageHeader header = GetMessageHeader(url, nonce);
 
         return Jws.Sign(
-            base64EncodedIntegrityProtectedHeader : GetBase64UrlEncodedJson(header),
-            base64UrlEncodedPayload               : string.Empty,
-            privateKey                            : _privateKey
+            base64EncodedIntegrityProtectedHeader: Base64Url.EncodeToString(
+                JsonSerializer.SerializeToUtf8Bytes(header, AcmeSerializerContext.Default.AcmeMessageHeader)),
+            base64UrlEncodedPayload: string.Empty,
+            privateKey: _privateKey
         );
     }
 
@@ -630,15 +631,5 @@ public class AcmeClient
         }
 
         return header;
-    }
-
-    private static readonly JsonSerializerOptions jso = new () {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-
-    private static string GetBase64UrlEncodedJson<T>(T instance)
-        where T: notnull
-    {
-        return Base64Url.EncodeToString(JsonSerializer.SerializeToUtf8Bytes(instance, jso));
     }
 }

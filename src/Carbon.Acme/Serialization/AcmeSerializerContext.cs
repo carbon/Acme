@@ -4,6 +4,7 @@ using Carbon.Acme.Exceptions;
 
 namespace Carbon.Acme.Serialization;
 
+[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(Account))]
 [JsonSerializable(typeof(Authorization))]
 [JsonSerializable(typeof(Directory))]
@@ -11,6 +12,7 @@ namespace Carbon.Acme.Serialization;
 [JsonSerializable(typeof(Order))]
 [JsonSerializable(typeof(OrderList))]
 [JsonSerializable(typeof(Problem))]
+[JsonSerializable(typeof(AcmeMessageHeader))]
 public partial class AcmeSerializerContext : JsonSerializerContext
 {
 }
