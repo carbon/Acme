@@ -21,6 +21,6 @@ public class CreateOrderRequestTests
                 }
               ]
             }
-            """, JsonSerializer.Serialize(request, JSO.Indented));
+            """, JsonSerializer.Serialize(request, JSO.Indented).ReplaceLineEndings("\n"));
     }
 }
